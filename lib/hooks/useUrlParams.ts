@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 /**
@@ -13,12 +13,29 @@ export function useUrlParams<T extends Record<string, any>>(
 ) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  
+  // Only use useSearchParams on the client side
+  let searchParams: URLSearchParams | null = null;
+  try {
+    searchParams = useSearchParams();
+  } catch (error) {
+    // Handle the case where useSearchParams is called during SSR
+    searchParams = null;
+  }
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Decode state from URL params on mount
   const getStateFromUrl = useCallback((): Partial<T> => {
     const state: Partial<T> = {};
+    
+    if (!searchParams || !isClient) {
+      return state;
+    }
     
     for (const [key, value] of searchParams.entries()) {
       if (key.startsWith(`${namespace}_`)) {
@@ -34,10 +51,14 @@ export function useUrlParams<T extends Record<string, any>>(
     }
     
     return state;
-  }, [searchParams, namespace]);
+  }, [searchParams, namespace, isClient]);
 
   // Encode state to URL params
   const updateUrl = useCallback((state: Partial<T>) => {
+    if (!searchParams || !isClient) {
+      return;
+    }
+    
     const params = new URLSearchParams(searchParams);
     
     // Remove all existing params for this namespace
@@ -61,7 +82,7 @@ export function useUrlParams<T extends Record<string, any>>(
     // Update URL without navigation
     const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
     router.replace(newUrl, { scroll: false });
-  }, [pathname, router, searchParams, namespace]);
+  }, [pathname, router, searchParams, namespace, isClient]);
 
   // Get shareable URL
   const getShareableUrl = useCallback((state: Partial<T>): string => {

@@ -7,8 +7,8 @@ import MaterialCalculatorClient from "./MaterialCalculatorClient";
 export const metadata: Metadata = generateMetadata(calculatorMetadata.materialCalculator());
 
 export default function MaterialCalculatorPage() {
-        return (
-          <>
+  return (
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
