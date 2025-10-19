@@ -97,7 +97,7 @@ export default function HomeContent() {
 
       {/* Reference Categories - Industrial Design */}
       <section id="references" className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
           <Link href="/tolerances">
             <SectionCard
               partNumber="TOL-001"
@@ -106,13 +106,14 @@ export default function HomeContent() {
               subtitle="Standard fits and GD&T"
               hover
             >
-              <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2 mb-6 flex-grow">
-                <li>• Hole and shaft tolerances</li>
-                <li>• Geometric dimensioning</li>
-                <li>• Surface finish standards</li>
-                <li>• Class fit specifications</li>
+              <ul className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 space-y-1 sm:space-y-2 mb-4 sm:mb-6 flex-grow">
+                <li className="sm:hidden">• Hole/shaft tolerances, GD&T</li>
+                <li className="hidden sm:block">• Hole and shaft tolerances</li>
+                <li className="hidden sm:block">• Geometric dimensioning</li>
+                <li className="hidden sm:block">• Surface finish standards</li>
+                <li className="hidden sm:block">• Class fit specifications</li>
               </ul>
-              <span className="text-sm font-medium hover:opacity-60 transition-opacity">
+              <span className="text-xs sm:text-sm font-medium hover:opacity-60 transition-opacity">
                 View tolerance references →
               </span>
             </SectionCard>
@@ -126,13 +127,14 @@ export default function HomeContent() {
               subtitle="Properties and grades"
               hover
             >
-              <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2 mb-6 flex-grow">
-                <li>• Steel and aluminum alloys</li>
-                <li>• Material hardness charts</li>
-                <li>• Thermal properties</li>
-                <li>• Material selection guides</li>
+              <ul className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 space-y-1 sm:space-y-2 mb-4 sm:mb-6 flex-grow">
+                <li className="sm:hidden">• Steel/aluminum alloys, hardness</li>
+                <li className="hidden sm:block">• Steel and aluminum alloys</li>
+                <li className="hidden sm:block">• Material hardness charts</li>
+                <li className="hidden sm:block">• Thermal properties</li>
+                <li className="hidden sm:block">• Material selection guides</li>
               </ul>
-              <span className="text-sm font-medium hover:opacity-60 transition-opacity">
+              <span className="text-xs sm:text-sm font-medium hover:opacity-60 transition-opacity">
                 View material references →
               </span>
             </SectionCard>
@@ -146,13 +148,14 @@ export default function HomeContent() {
               subtitle="Machining and fabrication"
               hover
             >
-              <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2 mb-6 flex-grow">
-                <li>• Tool selection guides</li>
-                <li>• Cutting parameters</li>
-                <li>• Operation sequences</li>
-                <li>• Process standards</li>
+              <ul className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 space-y-1 sm:space-y-2 mb-4 sm:mb-6 flex-grow">
+                <li className="sm:hidden">• Tool selection, cutting parameters</li>
+                <li className="hidden sm:block">• Tool selection guides</li>
+                <li className="hidden sm:block">• Cutting parameters</li>
+                <li className="hidden sm:block">• Operation sequences</li>
+                <li className="hidden sm:block">• Process standards</li>
               </ul>
-              <span className="text-sm font-medium hover:opacity-60 transition-opacity">
+              <span className="text-xs sm:text-sm font-medium hover:opacity-60 transition-opacity">
                 View process references →
               </span>
             </SectionCard>
@@ -166,13 +169,14 @@ export default function HomeContent() {
               subtitle="ISO, ANSI, and ASME"
               hover
             >
-              <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2 mb-6 flex-grow">
-                <li>• Thread specifications</li>
-                <li>• Fastener standards</li>
-                <li>• Weld symbols reference</li>
-                <li>• Drawing conventions</li>
+              <ul className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 space-y-1 sm:space-y-2 mb-4 sm:mb-6 flex-grow">
+                <li className="sm:hidden">• Thread specs, fastener standards</li>
+                <li className="hidden sm:block">• Thread specifications</li>
+                <li className="hidden sm:block">• Fastener standards</li>
+                <li className="hidden sm:block">• Weld symbols reference</li>
+                <li className="hidden sm:block">• Drawing conventions</li>
               </ul>
-              <span className="text-sm font-medium hover:opacity-60 transition-opacity">
+              <span className="text-xs sm:text-sm font-medium hover:opacity-60 transition-opacity">
                 View standards references →
               </span>
             </SectionCard>
