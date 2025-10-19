@@ -1,0 +1,57 @@
+﻿[
+  {
+    "designation": "H11/c11",
+    "type": "Clearance",
+    "description": "Loose running fit",
+    "applications": "Large clearances"
+  },
+  {
+    "designation": "H9/d9",
+    "type": "Clearance",
+    "description": "Free running fit",
+    "applications": "Rough work, low accuracy"
+  },
+  {
+    "designation": "H8/f7",
+    "type": "Clearance",
+    "description": "Close running fit",
+    "applications": "Precision running parts"
+  },
+  {
+    "designation": "H7/g6",
+    "type": "Clearance",
+    "description": "Sliding fit",
+    "applications": "Precise location, free movement"
+  },
+  {
+    "designation": "H7/h6",
+    "type": "Clearance",
+    "description": "Locational clearance",
+    "applications": "Accurate location, easy assembly"
+  },
+  {
+    "designation": "H7/k6",
+    "type": "Transition",
+    "description": "Transition fit",
+    "applications": "Precise location"
+  },
+  {
+    "designation": "H7/n6",
+    "type": "Transition",
+    "description": "Transition fit",
+    "applications": "More interference, press fit"
+  },
+  {
+    "designation": "H7/p6",
+    "type": "Interference",
+    "description": "Light press fit",
+    "applications": "Light assembly force"
+  },
+  {
+    "designation": "H7/s6",
+    "type": "Interference",
+    "description": "Press fit",
+    "applications": "Permanent assembly"
+  }
+]
+

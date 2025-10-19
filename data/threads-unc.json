@@ -1,0 +1,24 @@
+﻿[
+  { "size": "#4-40", "major": 0.112, "tpi": 40, "tapDrill": "3/32", "decimal": 0.0935 },
+  { "size": "#6-32", "major": 0.138, "tpi": 32, "tapDrill": "#36", "decimal": 0.1065 },
+  { "size": "#8-32", "major": 0.164, "tpi": 32, "tapDrill": "#29", "decimal": 0.136 },
+  { "size": "#10-24", "major": 0.19, "tpi": 24, "tapDrill": "#25", "decimal": 0.1495 },
+  { "size": "#10-32", "major": 0.19, "tpi": 32, "tapDrill": "#21", "decimal": 0.159 },
+  { "size": "1/4-20", "major": 0.25, "tpi": 20, "tapDrill": "#7", "decimal": 0.201 },
+  { "size": "1/4-28", "major": 0.25, "tpi": 28, "tapDrill": "#3", "decimal": 0.213 },
+  { "size": "5/16-18", "major": 0.3125, "tpi": 18, "tapDrill": "F", "decimal": 0.257 },
+  { "size": "5/16-24", "major": 0.3125, "tpi": 24, "tapDrill": "I", "decimal": 0.272 },
+  { "size": "3/8-16", "major": 0.375, "tpi": 16, "tapDrill": "5/16", "decimal": 0.3125 },
+  { "size": "3/8-24", "major": 0.375, "tpi": 24, "tapDrill": "Q", "decimal": 0.332 },
+  { "size": "7/16-14", "major": 0.4375, "tpi": 14, "tapDrill": "U", "decimal": 0.368 },
+  { "size": "7/16-20", "major": 0.4375, "tpi": 20, "tapDrill": "25/64", "decimal": 0.3906 },
+  { "size": "1/2-13", "major": 0.5, "tpi": 13, "tapDrill": "27/64", "decimal": 0.4219 },
+  { "size": "1/2-20", "major": 0.5, "tpi": 20, "tapDrill": "29/64", "decimal": 0.4531 },
+  { "size": "9/16-12", "major": 0.5625, "tpi": 12, "tapDrill": "31/64", "decimal": 0.4844 },
+  { "size": "9/16-18", "major": 0.5625, "tpi": 18, "tapDrill": "33/64", "decimal": 0.5156 },
+  { "size": "5/8-11", "major": 0.625, "tpi": 11, "tapDrill": "17/32", "decimal": 0.5312 },
+  { "size": "5/8-18", "major": 0.625, "tpi": 18, "tapDrill": "37/64", "decimal": 0.5781 },
+  { "size": "3/4-10", "major": 0.75, "tpi": 10, "tapDrill": "21/32", "decimal": 0.6562 },
+  { "size": "3/4-16", "major": 0.75, "tpi": 16, "tapDrill": "11/16", "decimal": 0.6875 }
+]
+

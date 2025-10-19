@@ -1,0 +1,876 @@
+﻿{
+  "steel_1018": {
+    "name": "Carbon Steel 1018",
+    "density": 0.284,
+    "expansion": 6.5,
+    "tensileStrength": 64,
+    "yieldStrength": 54,
+    "hardness": 126,
+    "category": "Steel",
+    "subcategory": "Carbon Steel",
+    "description": "Low carbon steel with good weldability and machinability",
+    "applications": ["General purpose parts", "Shafts", "Bolts", "Structural components"],
+    "properties": {
+      "density": {
+        "value": 0.284,
+        "unit": "lb/in^3",
+        "range": [0.280, 0.290],
+        "citation": "ASM Handbook, Vol. 1, Properties and Selection: Irons, Steels, and High-Performance Alloys"
+      },
+      "expansion": {
+        "value": 6.5,
+        "unit": "x10^-6 in/in/degF",
+        "range": [6.0, 7.0],
+        "citation": "ASM Handbook, Vol. 2, Properties and Selection: Nonferrous Alloys and Special-Purpose Materials"
+      },
+      "tensileStrength": {
+        "value": 64,
+        "unit": "ksi",
+        "range": [58, 70],
+        "citation": "ASTM A29/A29M-16, Standard Specification for Steel Bars, Carbon and Alloy, Hot-Wrought"
+      },
+      "yieldStrength": {
+        "value": 54,
+        "unit": "ksi",
+        "range": [45, 60],
+        "citation": "ASTM A29/A29M-16, Standard Specification for Steel Bars, Carbon and Alloy, Hot-Wrought"
+      },
+      "hardness": {
+        "value": 126,
+        "unit": "HB",
+        "range": [110, 140],
+        "citation": "ASM Handbook, Vol. 1, Properties and Selection: Irons, Steels, and High-Performance Alloys"
+      }
+    }
+  },
+  "steel_4140": {
+    "name": "Alloy Steel 4140",
+    "density": 0.284,
+    "expansion": 6.2,
+    "tensileStrength": 95,
+    "yieldStrength": 60,
+    "hardness": 197,
+    "category": "Steel",
+    "subcategory": "Alloy Steel",
+    "description": "Chromium-molybdenum alloy steel with excellent strength and toughness",
+    "applications": ["High-stress parts", "Tooling", "Gears", "Shafts", "Bolts"],
+    "properties": {
+      "density": {
+        "value": 0.284,
+        "unit": "lb/in^3",
+        "range": [0.280, 0.290],
+        "citation": "ASM Handbook, Vol. 1, Properties and Selection: Irons, Steels, and High-Performance Alloys"
+      },
+      "expansion": {
+        "value": 6.2,
+        "unit": "x10^-6 in/in/degF",
+        "range": [6.0, 6.5],
+        "citation": "ASM Handbook, Vol. 2, Properties and Selection: Nonferrous Alloys and Special-Purpose Materials"
+      },
+      "tensileStrength": {
+        "value": 95,
+        "unit": "ksi",
+        "range": [85, 105],
+        "citation": "ASTM A29/A29M-16, Standard Specification for Steel Bars, Carbon and Alloy, Hot-Wrought"
+      },
+      "yieldStrength": {
+        "value": 60,
+        "unit": "ksi",
+        "range": [50, 70],
+        "citation": "ASTM A29/A29M-16, Standard Specification for Steel Bars, Carbon and Alloy, Hot-Wrought"
+      },
+      "hardness": {
+        "value": 197,
+        "unit": "HB",
+        "range": [180, 220],
+        "citation": "ASM Handbook, Vol. 1, Properties and Selection: Irons, Steels, and High-Performance Alloys"
+      }
+    }
+  },
+  "steel_4340": {
+    "name": "Alloy Steel 4340",
+    "density": 0.284,
+    "expansion": 6.0,
+    "tensileStrength": 108,
+    "yieldStrength": 75,
+    "hardness": 217,
+    "category": "Steel",
+    "subcategory": "Alloy Steel",
+    "description": "High-strength alloy steel with excellent toughness and fatigue resistance",
+    "applications": ["Aircraft parts", "Critical components", "High-stress applications", "Gears", "Shafts"],
+    "properties": {
+      "density": {
+        "value": 0.284,
+        "unit": "lb/in^3",
+        "range": [0.280, 0.290],
+        "citation": "ASM Handbook, Vol. 1, Properties and Selection: Irons, Steels, and High-Performance Alloys"
+      },
+      "expansion": {
+        "value": 6.0,
+        "unit": "x10^-6 in/in/degF",
+        "range": [5.8, 6.2],
+        "citation": "ASM Handbook, Vol. 2, Properties and Selection: Nonferrous Alloys and Special-Purpose Materials"
+      },
+      "tensileStrength": {
+        "value": 108,
+        "unit": "ksi",
+        "range": [100, 120],
+        "citation": "ASTM A29/A29M-16, Standard Specification for Steel Bars, Carbon and Alloy, Hot-Wrought"
+      },
+      "yieldStrength": {
+        "value": 75,
+        "unit": "ksi",
+        "range": [70, 85],
+        "citation": "ASTM A29/A29M-16, Standard Specification for Steel Bars, Carbon and Alloy, Hot-Wrought"
+      },
+      "hardness": {
+        "value": 217,
+        "unit": "HB",
+        "range": [200, 240],
+        "citation": "ASM Handbook, Vol. 1, Properties and Selection: Irons, Steels, and High-Performance Alloys"
+      }
+    }
+  },
+  "steel_a2": {
+    "name": "Tool Steel A2",
+    "density": 0.284,
+    "expansion": 6.0,
+    "tensileStrength": 120,
+    "yieldStrength": 85,
+    "hardness": 250,
+    "category": "Steel",
+    "subcategory": "Tool Steel",
+    "description": "Air-hardening tool steel with good dimensional stability",
+    "applications": ["Dies", "Molds", "Cutting tools", "Gauges", "Fixtures"],
+    "properties": {
+      "density": {
+        "value": 0.284,
+        "unit": "lb/in^3",
+        "range": [0.280, 0.290],
+        "citation": "ASM Handbook, Vol. 1, Properties and Selection: Irons, Steels, and High-Performance Alloys"
+      },
+      "expansion": {
+        "value": 6.0,
+        "unit": "x10^-6 in/in/degF",
+        "range": [5.8, 6.2],
+        "citation": "ASM Handbook, Vol. 2, Properties and Selection: Nonferrous Alloys and Special-Purpose Materials"
+      },
+      "tensileStrength": {
+        "value": 120,
+        "unit": "ksi",
+        "range": [110, 130],
+        "citation": "ASTM A681-08, Standard Specification for Tool Steels Alloy"
+      },
+      "yieldStrength": {
+        "value": 85,
+        "unit": "ksi",
+        "range": [80, 95],
+        "citation": "ASTM A681-08, Standard Specification for Tool Steels Alloy"
+      },
+      "hardness": {
+        "value": 250,
+        "unit": "HB",
+        "range": [240, 260],
+        "citation": "ASM Handbook, Vol. 1, Properties and Selection: Irons, Steels, and High-Performance Alloys"
+      }
+    }
+  },
+  "steel_d2": {
+    "name": "Tool Steel D2",
+    "density": 0.284,
+    "expansion": 5.8,
+    "tensileStrength": 140,
+    "yieldStrength": 100,
+    "hardness": 300,
+    "category": "Steel",
+    "subcategory": "Tool Steel",
+    "description": "High-carbon, high-chromium tool steel with excellent wear resistance",
+    "applications": ["Dies", "Cutting tools", "Wear plates", "Punches", "Blades"],
+    "properties": {
+      "density": {
+        "value": 0.284,
+        "unit": "lb/in^3",
+        "range": [0.280, 0.290],
+        "citation": "ASM Handbook, Vol. 1, Properties and Selection: Irons, Steels, and High-Performance Alloys"
+      },
+      "expansion": {
+        "value": 5.8,
+        "unit": "x10^-6 in/in/degF",
+        "range": [5.5, 6.0],
+        "citation": "ASM Handbook, Vol. 2, Properties and Selection: Nonferrous Alloys and Special-Purpose Materials"
+      },
+      "tensileStrength": {
+        "value": 140,
+        "unit": "ksi",
+        "range": [130, 150],
+        "citation": "ASTM A681-08, Standard Specification for Tool Steels Alloy"
+      },
+      "yieldStrength": {
+        "value": 100,
+        "unit": "ksi",
+        "range": [90, 110],
+        "citation": "ASTM A681-08, Standard Specification for Tool Steels Alloy"
+      },
+      "hardness": {
+        "value": 300,
+        "unit": "HB",
+        "range": [280, 320],
+        "citation": "ASM Handbook, Vol. 1, Properties and Selection: Irons, Steels, and High-Performance Alloys"
+      }
+    }
+  },
+  "steel_h13": {
+    "name": "Hot Work Steel H13",
+    "density": 0.284,
+    "expansion": 6.2,
+    "tensileStrength": 130,
+    "yieldStrength": 90,
+    "hardness": 280,
+    "category": "Steel"
+  },
+  "steel_spring": {
+    "name": "Spring Steel 1095",
+    "density": 0.284,
+    "expansion": 6.5,
+    "tensileStrength": 85,
+    "yieldStrength": 50,
+    "hardness": 150,
+    "category": "Steel"
+  },
+  "stainless_304": {
+    "name": "Stainless Steel 304",
+    "density": 0.29,
+    "expansion": 9.6,
+    "tensileStrength": 90,
+    "yieldStrength": 42,
+    "hardness": 201,
+    "category": "Stainless Steel",
+    "subcategory": "Austenitic",
+    "description": "Most widely used stainless steel with excellent corrosion resistance",
+    "applications": ["Food equipment", "Chemical tanks", "Kitchen appliances", "Architectural", "Medical devices"],
+    "properties": {
+      "density": {
+        "value": 0.29,
+        "unit": "lb/in^3",
+        "range": [0.285, 0.295],
+        "citation": "ASM Handbook, Vol. 1, Properties and Selection: Irons, Steels, and High-Performance Alloys"
+      },
+      "expansion": {
+        "value": 9.6,
+        "unit": "x10^-6 in/in/degF",
+        "range": [9.0, 10.0],
+        "citation": "ASM Handbook, Vol. 2, Properties and Selection: Nonferrous Alloys and Special-Purpose Materials"
+      },
+      "tensileStrength": {
+        "value": 90,
+        "unit": "ksi",
+        "range": [85, 95],
+        "citation": "ASTM A240/A240M-20, Standard Specification for Chromium and Chromium-Nickel Stainless Steel Plate"
+      },
+      "yieldStrength": {
+        "value": 42,
+        "unit": "ksi",
+        "range": [35, 50],
+        "citation": "ASTM A240/A240M-20, Standard Specification for Chromium and Chromium-Nickel Stainless Steel Plate"
+      },
+      "hardness": {
+        "value": 201,
+        "unit": "HB",
+        "range": [180, 220],
+        "citation": "ASM Handbook, Vol. 1, Properties and Selection: Irons, Steels, and High-Performance Alloys"
+      }
+    }
+  },
+  "stainless_316": {
+    "name": "Stainless Steel 316",
+    "density": 0.29,
+    "expansion": 9.6,
+    "tensileStrength": 85,
+    "yieldStrength": 35,
+    "hardness": 217,
+    "category": "Stainless Steel",
+    "subcategory": "Austenitic",
+    "description": "Molybdenum-bearing austenitic stainless steel with superior corrosion resistance",
+    "applications": ["Marine equipment", "Pharmaceutical", "Chemical processing", "Food equipment", "Medical devices"],
+    "properties": {
+      "density": {
+        "value": 0.29,
+        "unit": "lb/in^3",
+        "range": [0.285, 0.295],
+        "citation": "ASM Handbook, Vol. 1, Properties and Selection: Irons, Steels, and High-Performance Alloys"
+      },
+      "expansion": {
+        "value": 9.6,
+        "unit": "x10^-6 in/in/degF",
+        "range": [9.0, 10.0],
+        "citation": "ASM Handbook, Vol. 2, Properties and Selection: Nonferrous Alloys and Special-Purpose Materials"
+      },
+      "tensileStrength": {
+        "value": 85,
+        "unit": "ksi",
+        "range": [80, 90],
+        "citation": "ASTM A240/A240M-20, Standard Specification for Chromium and Chromium-Nickel Stainless Steel Plate"
+      },
+      "yieldStrength": {
+        "value": 35,
+        "unit": "ksi",
+        "range": [30, 40],
+        "citation": "ASTM A240/A240M-20, Standard Specification for Chromium and Chromium-Nickel Stainless Steel Plate"
+      },
+      "hardness": {
+        "value": 217,
+        "unit": "HB",
+        "range": [200, 240],
+        "citation": "ASM Handbook, Vol. 1, Properties and Selection: Irons, Steels, and High-Performance Alloys"
+      }
+    }
+  },
+  "stainless_410": {
+    "name": "Stainless Steel 410",
+    "density": 0.28,
+    "expansion": 5.5,
+    "tensileStrength": 75,
+    "yieldStrength": 40,
+    "hardness": 150,
+    "category": "Stainless Steel"
+  },
+  "stainless_17_4_ph": {
+    "name": "Stainless Steel 17-4 PH",
+    "density": 0.28,
+    "expansion": 6.0,
+    "tensileStrength": 140,
+    "yieldStrength": 110,
+    "hardness": 300,
+    "category": "Stainless Steel"
+  },
+  "stainless_440c": {
+    "name": "Stainless Steel 440C",
+    "density": 0.28,
+    "expansion": 5.5,
+    "tensileStrength": 100,
+    "yieldStrength": 70,
+    "hardness": 400,
+    "category": "Stainless Steel"
+  },
+  "aluminum_6061": {
+    "name": "Aluminum 6061-T6",
+    "density": 0.098,
+    "expansion": 13.1,
+    "tensileStrength": 45,
+    "yieldStrength": 40,
+    "hardness": 95,
+    "category": "Aluminum",
+    "subcategory": "6xxx Series",
+    "description": "General purpose aluminum alloy with good corrosion resistance and weldability",
+    "applications": ["Structural components", "Aerospace", "Automotive", "Marine", "General fabrication"],
+    "properties": {
+      "density": {
+        "value": 0.098,
+        "unit": "lb/in^3",
+        "range": [0.095, 0.100],
+        "citation": "ASM Handbook, Vol. 2, Properties and Selection: Nonferrous Alloys and Special-Purpose Materials"
+      },
+      "expansion": {
+        "value": 13.1,
+        "unit": "x10^-6 in/in/degF",
+        "range": [12.5, 13.5],
+        "citation": "ASM Handbook, Vol. 2, Properties and Selection: Nonferrous Alloys and Special-Purpose Materials"
+      },
+      "tensileStrength": {
+        "value": 45,
+        "unit": "ksi",
+        "range": [40, 50],
+        "citation": "ASTM B209-14, Standard Specification for Aluminum and Aluminum-Alloy Sheet and Plate"
+      },
+      "yieldStrength": {
+        "value": 40,
+        "unit": "ksi",
+        "range": [35, 45],
+        "citation": "ASTM B209-14, Standard Specification for Aluminum and Aluminum-Alloy Sheet and Plate"
+      },
+      "hardness": {
+        "value": 95,
+        "unit": "HB",
+        "range": [85, 105],
+        "citation": "ASM Handbook, Vol. 2, Properties and Selection: Nonferrous Alloys and Special-Purpose Materials"
+      }
+    }
+  },
+  "aluminum_2024": {
+    "name": "Aluminum 2024-T4",
+    "density": 0.101,
+    "expansion": 12.9,
+    "tensileStrength": 70,
+    "yieldStrength": 50,
+    "hardness": 120,
+    "category": "Aluminum",
+    "subcategory": "2xxx Series",
+    "description": "High-strength aluminum alloy with excellent fatigue resistance",
+    "applications": ["Aircraft structures", "Fittings", "High-stress components", "Aerospace", "Transportation"],
+    "properties": {
+      "density": {
+        "value": 0.101,
+        "unit": "lb/in^3",
+        "range": [0.098, 0.104],
+        "citation": "ASM Handbook, Vol. 2, Properties and Selection: Nonferrous Alloys and Special-Purpose Materials"
+      },
+      "expansion": {
+        "value": 12.9,
+        "unit": "x10^-6 in/in/degF",
+        "range": [12.5, 13.5],
+        "citation": "ASM Handbook, Vol. 2, Properties and Selection: Nonferrous Alloys and Special-Purpose Materials"
+      },
+      "tensileStrength": {
+        "value": 70,
+        "unit": "ksi",
+        "range": [65, 75],
+        "citation": "ASTM B209-14, Standard Specification for Aluminum and Aluminum-Alloy Sheet and Plate"
+      },
+      "yieldStrength": {
+        "value": 50,
+        "unit": "ksi",
+        "range": [45, 55],
+        "citation": "ASTM B209-14, Standard Specification for Aluminum and Aluminum-Alloy Sheet and Plate"
+      },
+      "hardness": {
+        "value": 120,
+        "unit": "HB",
+        "range": [110, 130],
+        "citation": "ASM Handbook, Vol. 2, Properties and Selection: Nonferrous Alloys and Special-Purpose Materials"
+      }
+    }
+  },
+  "aluminum_7075": {
+    "name": "Aluminum 7075-T6",
+    "density": 0.101,
+    "expansion": 13.1,
+    "tensileStrength": 83,
+    "yieldStrength": 73,
+    "hardness": 150,
+    "category": "Aluminum",
+    "subcategory": "7xxx Series",
+    "description": "High-strength aluminum alloy with zinc as primary alloying element",
+    "applications": ["Aircraft structures", "High-stress components", "Aerospace", "Military equipment", "Sporting goods"],
+    "properties": {
+      "density": {
+        "value": 0.101,
+        "unit": "lb/in^3",
+        "range": [0.098, 0.104],
+        "citation": "ASM Handbook, Vol. 2, Properties and Selection: Nonferrous Alloys and Special-Purpose Materials"
+      },
+      "expansion": {
+        "value": 13.1,
+        "unit": "x10^-6 in/in/degF",
+        "range": [12.5, 13.5],
+        "citation": "ASM Handbook, Vol. 2, Properties and Selection: Nonferrous Alloys and Special-Purpose Materials"
+      },
+      "tensileStrength": {
+        "value": 83,
+        "unit": "ksi",
+        "range": [78, 88],
+        "citation": "ASTM B209-14, Standard Specification for Aluminum and Aluminum-Alloy Sheet and Plate"
+      },
+      "yieldStrength": {
+        "value": 73,
+        "unit": "ksi",
+        "range": [68, 78],
+        "citation": "ASTM B209-14, Standard Specification for Aluminum and Aluminum-Alloy Sheet and Plate"
+      },
+      "hardness": {
+        "value": 150,
+        "unit": "HB",
+        "range": [140, 160],
+        "citation": "ASM Handbook, Vol. 2, Properties and Selection: Nonferrous Alloys and Special-Purpose Materials"
+      }
+    }
+  },
+  "aluminum_5052": {
+    "name": "Aluminum 5052-H32",
+    "density": 0.097,
+    "expansion": 13.2,
+    "tensileStrength": 33,
+    "yieldStrength": 28,
+    "hardness": 60,
+    "category": "Aluminum"
+  },
+  "aluminum_1100": {
+    "name": "Aluminum 1100-H14",
+    "density": 0.097,
+    "expansion": 13.1,
+    "tensileStrength": 16,
+    "yieldStrength": 15,
+    "hardness": 30,
+    "category": "Aluminum"
+  },
+  "titanium_grade2": {
+    "name": "Titanium Grade 2",
+    "density": 0.163,
+    "expansion": 4.9,
+    "tensileStrength": 50,
+    "yieldStrength": 40,
+    "hardness": 120,
+    "category": "Titanium"
+  },
+  "titanium_grade5": {
+    "name": "Titanium Grade 5 (Ti-6Al-4V)",
+    "density": 0.163,
+    "expansion": 5.0,
+    "tensileStrength": 130,
+    "yieldStrength": 120,
+    "hardness": 334,
+    "category": "Titanium"
+  },
+  "titanium_grade23": {
+    "name": "Titanium Grade 23 (Ti-6Al-4V ELI)",
+    "density": 0.163,
+    "expansion": 5.0,
+    "tensileStrength": 120,
+    "yieldStrength": 110,
+    "hardness": 320,
+    "category": "Titanium"
+  },
+  "brass_c360": {
+    "name": "Brass C360 (Free Machining)",
+    "density": 0.308,
+    "expansion": 10.4,
+    "tensileStrength": 57,
+    "yieldStrength": 25,
+    "hardness": 66,
+    "category": "Copper Alloys"
+  },
+  "brass_c260": {
+    "name": "Brass C260 (Cartridge)",
+    "density": 0.308,
+    "expansion": 10.4,
+    "tensileStrength": 55,
+    "yieldStrength": 20,
+    "hardness": 60,
+    "category": "Copper Alloys"
+  },
+  "bronze_c932": {
+    "name": "Bronze C932 (Bearing)",
+    "density": 0.318,
+    "expansion": 10.0,
+    "tensileStrength": 40,
+    "yieldStrength": 20,
+    "hardness": 80,
+    "category": "Copper Alloys"
+  },
+  "bronze_c954": {
+    "name": "Bronze C954 (Aluminum Bronze)",
+    "density": 0.275,
+    "expansion": 8.5,
+    "tensileStrength": 90,
+    "yieldStrength": 40,
+    "hardness": 150,
+    "category": "Copper Alloys"
+  },
+  "copper_c101": {
+    "name": "Copper C101 (Oxygen Free)",
+    "density": 0.324,
+    "expansion": 9.8,
+    "tensileStrength": 32,
+    "yieldStrength": 10,
+    "hardness": 45,
+    "category": "Copper Alloys"
+  },
+  "copper_c110": {
+    "name": "Copper C110 (Electrolytic)",
+    "density": 0.324,
+    "expansion": 9.8,
+    "tensileStrength": 30,
+    "yieldStrength": 8,
+    "hardness": 40,
+    "category": "Copper Alloys"
+  },
+  "cast_iron_gray": {
+    "name": "Gray Cast Iron",
+    "density": 0.26,
+    "expansion": 6.0,
+    "tensileStrength": 25,
+    "yieldStrength": 0,
+    "hardness": 200,
+    "category": "Cast Iron"
+  },
+  "cast_iron_ductile": {
+    "name": "Ductile Cast Iron",
+    "density": 0.26,
+    "expansion": 6.0,
+    "tensileStrength": 60,
+    "yieldStrength": 40,
+    "hardness": 180,
+    "category": "Cast Iron"
+  },
+  "inconel_625": {
+    "name": "Inconel 625",
+    "density": 0.305,
+    "expansion": 7.2,
+    "tensileStrength": 120,
+    "yieldStrength": 60,
+    "hardness": 200,
+    "category": "Nickel Alloys"
+  },
+  "inconel_718": {
+    "name": "Inconel 718",
+    "density": 0.295,
+    "expansion": 6.5,
+    "tensileStrength": 140,
+    "yieldStrength": 100,
+    "hardness": 250,
+    "category": "Nickel Alloys"
+  },
+  "hastelloy_c276": {
+    "name": "Hastelloy C-276",
+    "density": 0.312,
+    "expansion": 6.2,
+    "tensileStrength": 100,
+    "yieldStrength": 41,
+    "hardness": 200,
+    "category": "Nickel Alloys"
+  },
+  "monel_400": {
+    "name": "Monel 400",
+    "density": 0.319,
+    "expansion": 7.5,
+    "tensileStrength": 80,
+    "yieldStrength": 35,
+    "hardness": 150,
+    "category": "Nickel Alloys"
+  },
+  "abs": {
+    "name": "ABS Plastic",
+    "density": 0.038,
+    "expansion": 50.0,
+    "tensileStrength": 6.5,
+    "yieldStrength": 5.0,
+    "hardness": 15,
+    "category": "Plastics"
+  },
+  "peek": {
+    "name": "PEEK Plastic",
+    "density": 0.047,
+    "expansion": 30.0,
+    "tensileStrength": 14,
+    "yieldStrength": 12,
+    "hardness": 25,
+    "category": "Plastics"
+  },
+  "ptfe": {
+    "name": "PTFE (Teflon)",
+    "density": 0.079,
+    "expansion": 55.0,
+    "tensileStrength": 3.5,
+    "yieldStrength": 2.5,
+    "hardness": 5,
+    "category": "Plastics"
+  },
+  "nylon_66": {
+    "name": "Nylon 66",
+    "density": 0.041,
+    "expansion": 45.0,
+    "tensileStrength": 12,
+    "yieldStrength": 8,
+    "hardness": 20,
+    "category": "Plastics"
+  },
+  "polycarbonate": {
+    "name": "Polycarbonate",
+    "density": 0.043,
+    "expansion": 40.0,
+    "tensileStrength": 9.5,
+    "yieldStrength": 8.5,
+    "hardness": 18,
+    "category": "Plastics"
+  },
+  "delrin": {
+    "name": "Delrin (POM)",
+    "density": 0.051,
+    "expansion": 35.0,
+    "tensileStrength": 10,
+    "yieldStrength": 8,
+    "hardness": 22,
+    "category": "Plastics"
+  },
+  "carbon_fiber": {
+    "name": "Carbon Fiber Composite",
+    "density": 0.055,
+    "expansion": 0.5,
+    "tensileStrength": 200,
+    "yieldStrength": 180,
+    "hardness": 0,
+    "category": "Composites"
+  },
+  "fiberglass": {
+    "name": "Fiberglass Composite",
+    "density": 0.065,
+    "expansion": 8.0,
+    "tensileStrength": 30,
+    "yieldStrength": 25,
+    "hardness": 0,
+    "category": "Composites"
+  },
+  "kevlar": {
+    "name": "Kevlar Composite",
+    "density": 0.052,
+    "expansion": 2.0,
+    "tensileStrength": 150,
+    "yieldStrength": 120,
+    "hardness": 0,
+    "category": "Composites"
+  },
+  "alumina": {
+    "name": "Alumina Ceramic",
+    "density": 0.142,
+    "expansion": 6.0,
+    "tensileStrength": 20,
+    "yieldStrength": 0,
+    "hardness": 1500,
+    "category": "Ceramics"
+  },
+  "zirconia": {
+    "name": "Zirconia Ceramic",
+    "density": 0.210,
+    "expansion": 8.0,
+    "tensileStrength": 50,
+    "yieldStrength": 0,
+    "hardness": 1200,
+    "category": "Ceramics"
+  },
+  "silicon_carbide": {
+    "name": "Silicon Carbide",
+    "density": 0.116,
+    "expansion": 2.8,
+    "tensileStrength": 15,
+    "yieldStrength": 0,
+    "hardness": 2800,
+    "category": "Ceramics"
+  },
+  "tungsten": {
+    "name": "Tungsten",
+    "density": 0.697,
+    "expansion": 2.5,
+    "tensileStrength": 150,
+    "yieldStrength": 100,
+    "hardness": 400,
+    "category": "Refractory Metals"
+  },
+  "molybdenum": {
+    "name": "Molybdenum",
+    "density": 0.370,
+    "expansion": 2.9,
+    "tensileStrength": 80,
+    "yieldStrength": 60,
+    "hardness": 200,
+    "category": "Refractory Metals"
+  },
+  "tantalum": {
+    "name": "Tantalum",
+    "density": 0.600,
+    "expansion": 3.6,
+    "tensileStrength": 40,
+    "yieldStrength": 30,
+    "hardness": 100,
+    "category": "Refractory Metals"
+  },
+  "magnesium_az31": {
+    "name": "Magnesium AZ31B",
+    "density": 0.065,
+    "expansion": 14.0,
+    "tensileStrength": 38,
+    "yieldStrength": 22,
+    "hardness": 50,
+    "category": "Magnesium"
+  },
+  "magnesium_az91": {
+    "name": "Magnesium AZ91D",
+    "density": 0.065,
+    "expansion": 14.0,
+    "tensileStrength": 40,
+    "yieldStrength": 25,
+    "hardness": 60,
+    "category": "Magnesium"
+  },
+  "beryllium_copper": {
+    "name": "Beryllium Copper C17200",
+    "density": 0.298,
+    "expansion": 9.3,
+    "tensileStrength": 125,
+    "yieldStrength": 110,
+    "hardness": 300,
+    "category": "Copper Alloys"
+  },
+  "nickel_200": {
+    "name": "Nickel 200",
+    "density": 0.322,
+    "expansion": 7.2,
+    "tensileStrength": 55,
+    "yieldStrength": 20,
+    "hardness": 100,
+    "category": "Nickel Alloys"
+  },
+  "wood_oak": {
+    "name": "Oak Wood",
+    "density": 0.028,
+    "expansion": 20.0,
+    "tensileStrength": 2.5,
+    "yieldStrength": 1.8,
+    "hardness": 0,
+    "category": "Wood"
+  },
+  "wood_pine": {
+    "name": "Pine Wood",
+    "density": 0.025,
+    "expansion": 25.0,
+    "tensileStrength": 1.5,
+    "yieldStrength": 1.0,
+    "hardness": 0,
+    "category": "Wood"
+  },
+  "wood_plywood": {
+    "name": "Plywood",
+    "density": 0.030,
+    "expansion": 15.0,
+    "tensileStrength": 3.0,
+    "yieldStrength": 2.0,
+    "hardness": 0,
+    "category": "Wood"
+  },
+  "rubber_natural": {
+    "name": "Natural Rubber",
+    "density": 0.034,
+    "expansion": 200.0,
+    "tensileStrength": 0.3,
+    "yieldStrength": 0.2,
+    "hardness": 0,
+    "category": "Elastomers"
+  },
+  "rubber_silicone": {
+    "name": "Silicone Rubber",
+    "density": 0.030,
+    "expansion": 150.0,
+    "tensileStrength": 0.8,
+    "yieldStrength": 0.5,
+    "hardness": 0,
+    "category": "Elastomers"
+  },
+  "foam_polyurethane": {
+    "name": "Polyurethane Foam",
+    "density": 0.002,
+    "expansion": 100.0,
+    "tensileStrength": 0.1,
+    "yieldStrength": 0.05,
+    "hardness": 0,
+    "category": "Foams"
+  },
+  "foam_polystyrene": {
+    "name": "Polystyrene Foam",
+    "density": 0.001,
+    "expansion": 80.0,
+    "tensileStrength": 0.05,
+    "yieldStrength": 0.02,
+    "hardness": 0,
+    "category": "Foams"
+  }
+}
+
+
