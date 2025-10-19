@@ -4,6 +4,7 @@ import "./globals.css";
 import { AppSettingsProvider } from "@/lib/contexts/AppSettingsContext";
 import { SearchProvider } from "@/lib/contexts/SearchContext";
 import { CommandPalette } from "@/components/CommandPalette";
+import { MobileFAB } from "@/components/MobileFAB";
 import { organizationStructuredData, websiteStructuredData } from "@/lib/seo/structuredData";
 
 const geistSans = Geist({
@@ -136,6 +137,7 @@ export default function RootLayout({
           <SearchProvider>
             {children}
             <CommandPalette />
+            <MobileFAB />
           </SearchProvider>
         </AppSettingsProvider>
       </body>

@@ -15,7 +15,7 @@ export default function HomeContent() {
       <Header />
 
       {/* Hero Section - Industrial Design */}
-      <section className="relative py-20 overflow-hidden">
+      <section className="relative py-12 sm:py-20 overflow-hidden">
         {/* Technical Grid Background */}
         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]">
           <div
@@ -30,49 +30,50 @@ export default function HomeContent() {
           />
         </div>
 
-        <div className="max-w-5xl mx-auto px-6 relative">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 relative">
           {/* Technical Frame with Corner Brackets */}
-          <div className="relative border border-gray-300 dark:border-gray-700 p-12 md:p-16">
-            {/* Corner Brackets */}
-            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-black dark:border-white -translate-x-2 -translate-y-2"></div>
-            <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-black dark:border-white translate-x-2 -translate-y-2"></div>
-            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-black dark:border-white -translate-x-2 translate-y-2"></div>
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-black dark:border-white translate-x-2 translate-y-2"></div>
+          <div className="relative border border-gray-300 dark:border-gray-700 p-6 sm:p-12 md:p-16">
+            {/* Corner Brackets - Hidden on mobile for cleaner look */}
+            <div className="hidden sm:block absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-black dark:border-white -translate-x-2 -translate-y-2"></div>
+            <div className="hidden sm:block absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-black dark:border-white translate-x-2 -translate-y-2"></div>
+            <div className="hidden sm:block absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-black dark:border-white -translate-x-2 translate-y-2"></div>
+            <div className="hidden sm:block absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-black dark:border-white translate-x-2 translate-y-2"></div>
 
-            {/* Technical Measurement Lines */}
-            <div className="absolute -left-4 top-1/2 -translate-y-1/2 flex items-center gap-1">
+            {/* Technical Measurement Lines - Hidden on mobile */}
+            <div className="hidden sm:block absolute -left-4 top-1/2 -translate-y-1/2 flex items-center gap-1">
               <div className="w-3 h-px bg-gray-400 dark:bg-gray-600"></div>
               <div className="w-1 h-1 bg-gray-400 dark:bg-gray-600"></div>
             </div>
-            <div className="absolute -right-4 top-1/2 -translate-y-1/2 flex items-center gap-1">
+            <div className="hidden sm:block absolute -right-4 top-1/2 -translate-y-1/2 flex items-center gap-1">
               <div className="w-1 h-1 bg-gray-400 dark:bg-gray-600"></div>
               <div className="w-3 h-px bg-gray-400 dark:bg-gray-600"></div>
             </div>
 
             {/* Content */}
             <div className="text-center">
-              <div className="inline-block mb-6">
+              <div className="inline-block mb-4 sm:mb-6">
                 <div className="font-mono text-xs text-gray-500 dark:text-gray-500 mb-2 tracking-wider">
                   REV A | DWG-001 | REFERENCE LIBRARY
                 </div>
               </div>
 
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight tracking-tight">
-                MACHINING & FABRICATION
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight tracking-tight">
+                <span className="block sm:inline">MACHINING &</span>
+                <span className="block sm:inline sm:ml-2">FABRICATION</span>
                 <br />
-                <span className="text-gray-600 dark:text-gray-400">
+                <span className="text-gray-600 dark:text-gray-400 text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
                   REFERENCES
                 </span>
               </h1>
 
               <div className="max-w-2xl mx-auto">
-                <p className="text-base text-gray-600 dark:text-gray-400 mb-6">
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6 px-2">
                   Professional engineering calculators and reference tools for machining, manufacturing, and precision engineering. 
                   Access thread specifications, material properties, and tolerance analysis tools.
                 </p>
                 
                 {/* Search CTA */}
-                <div className="mb-6">
+                <div className="mb-4 sm:mb-6 px-4 sm:px-0">
                   <SearchButton className="w-full max-w-md mx-auto" />
                 </div>
                 
@@ -83,8 +84,8 @@ export default function HomeContent() {
             </div>
           </div>
 
-          {/* Dimension Line */}
-          <div className="flex items-center justify-center mt-4 gap-2">
+          {/* Dimension Line - Hidden on mobile */}
+          <div className="hidden sm:flex items-center justify-center mt-4 gap-2">
             <div className="w-8 h-px bg-gray-300 dark:bg-gray-700"></div>
             <span className="font-mono text-xs text-gray-400 dark:text-gray-600">
               1200.00
@@ -95,8 +96,8 @@ export default function HomeContent() {
       </section>
 
       {/* Reference Categories - Industrial Design */}
-      <section id="references" className="max-w-6xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <section id="references" className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <Link href="/tolerances">
             <SectionCard
               partNumber="TOL-001"
@@ -180,10 +181,10 @@ export default function HomeContent() {
       </section>
 
       {/* Features - Two Column Layout */}
-      <section className="border-y border-gray-200 dark:border-gray-800 py-12" aria-labelledby="features-heading">
-        <div className="max-w-6xl mx-auto px-6">
+      <section className="border-y border-gray-200 dark:border-gray-800 py-8 sm:py-12" aria-labelledby="features-heading">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <h2 id="features-heading" className="sr-only">Key Features</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 md:gap-x-16 gap-y-6 sm:gap-y-8">
             <article>
               <h3 className="text-xl font-bold mb-2">Global Search</h3>
               <p className="text-gray-600 dark:text-gray-400">
@@ -218,33 +219,30 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* Stats - Horizontal Layout */}
-      <section className="py-12">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex justify-between items-center text-center">
-            <div>
-              <div className="text-4xl font-bold mb-1">350+</div>
+      {/* Stats - Responsive Layout */}
+      <section className="py-8 sm:py-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            <div className="text-center">
+              <div className="text-3xl sm:text-4xl font-bold mb-1">350+</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 Reference Entries
               </div>
             </div>
-            <div className="h-12 w-px bg-gray-200 dark:bg-gray-800"></div>
-            <div>
-              <div className="text-4xl font-bold mb-1">56</div>
+            <div className="text-center">
+              <div className="text-3xl sm:text-4xl font-bold mb-1">56</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 Materials
               </div>
             </div>
-            <div className="h-12 w-px bg-gray-200 dark:bg-gray-800"></div>
-            <div>
-              <div className="text-4xl font-bold mb-1">6</div>
+            <div className="text-center">
+              <div className="text-3xl sm:text-4xl font-bold mb-1">6</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 Calculators
               </div>
             </div>
-            <div className="h-12 w-px bg-gray-200 dark:bg-gray-800"></div>
-            <div>
-              <div className="text-4xl font-bold mb-1">24/7</div>
+            <div className="text-center">
+              <div className="text-3xl sm:text-4xl font-bold mb-1">24/7</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 Access
               </div>

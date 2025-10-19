@@ -40,8 +40,8 @@ export function SettingsPanel({ className = "" }: SettingsPanelProps) {
 
       {/* Settings Panel */}
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 shadow-lg z-50">
-          <div className="p-4">
+        <div className="absolute top-full right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-black border border-gray-300 dark:border-gray-700 shadow-lg z-50">
+          <div className="p-3 sm:p-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-bold text-gray-600 dark:text-gray-400">
                 DISPLAY SETTINGS
@@ -62,7 +62,7 @@ export function SettingsPanel({ className = "" }: SettingsPanelProps) {
               <div className="flex gap-2">
                 <button
                   onClick={() => updateSettings({ unitSystem: 'imperial' })}
-                  className={`px-3 py-2 text-xs border transition-colors ${
+                  className={`flex-1 px-3 py-2 text-xs border transition-colors ${
                     settings.unitSystem === 'imperial'
                       ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white'
                       : 'border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -72,7 +72,7 @@ export function SettingsPanel({ className = "" }: SettingsPanelProps) {
                 </button>
                 <button
                   onClick={() => updateSettings({ unitSystem: 'metric' })}
-                  className={`px-3 py-2 text-xs border transition-colors ${
+                  className={`flex-1 px-3 py-2 text-xs border transition-colors ${
                     settings.unitSystem === 'metric'
                       ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white'
                       : 'border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800'
