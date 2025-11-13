@@ -3,6 +3,7 @@
  */
 
 import { SearchableItem, SearchResult } from '../types/search';
+import { highlightMatchSecure } from '../utils/sanitize';
 
 /**
  * Simple fuzzy matching algorithm
@@ -154,10 +155,9 @@ export function getSuggestions(query: string, items: SearchableItem[]): string[]
 
 /**
  * Highlight matching text in search results
+ * @deprecated Use highlightMatchSecure from utils/sanitize.ts instead for XSS protection
  */
 export function highlightMatch(text: string, query: string): string {
-  if (!query.trim()) return text;
-  
-  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-  return text.replace(regex, '<mark>$1</mark>');
+  // Re-export the secure version to maintain backwards compatibility
+  return highlightMatchSecure(text, query);
 }
