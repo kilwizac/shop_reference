@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
-import crypto from "crypto";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 import { organizationStructuredData, websiteStructuredData } from "@/lib/seo/structuredData";
@@ -87,25 +86,11 @@ export default function RootLayout({
 }>) {
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
   const gscVerification = process.env.NEXT_PUBLIC_GSC_VERIFICATION;
-  const isDev = process.env.NODE_ENV === 'development';
-  const nonce = crypto.randomUUID();
-  
-  // CSP needs 'unsafe-eval' in development for Next.js hot reloading
-  const cspContent = [
-    "default-src 'self';",
-    `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://www.google-analytics.com;`,
-    "style-src 'self' 'unsafe-inline';",
-    "img-src 'self' data: https://www.google-analytics.com;",
-    "connect-src 'self' https://www.google-analytics.com https://analytics.google.com;",
-    "font-src 'self' data:;",
-    "frame-ancestors 'none';",
-  ].join(" ");
 
   return (
     <html lang="en">
       <head>
-        {/* Security Headers - CSP for static site */}
-        <meta httpEquiv="Content-Security-Policy" content={cspContent} />
+        {/* Security Headers */}
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
         <meta name="referrer" content="strict-origin-when-cross-origin" />
         {gscVerification ? (
@@ -116,14 +101,12 @@ export default function RootLayout({
           id="organization-ld"
           type="application/ld+json"
           strategy="beforeInteractive"
-          nonce={nonce}
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationStructuredData.specfoundry()) }}
         />
         <Script
           id="website-ld"
           type="application/ld+json"
           strategy="beforeInteractive"
-          nonce={nonce}
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteStructuredData()) }}
         />
       </head>
@@ -133,7 +116,7 @@ export default function RootLayout({
         {gaId ? (
           <>
             <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="afterInteractive" />
-            <Script id="ga-init" strategy="afterInteractive" nonce={nonce}>{`
+            <Script id="ga-init" strategy="afterInteractive">{`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
