@@ -6,16 +6,17 @@
 export interface MaterialProperty {
   value: number;
   unit: string;
-  range: [number, number];
-  citation: string;
+  // Some entries include a range, others omit it entirely
+  range?: [number, number] | number[];
+  citation?: string;
 }
 
 export interface MaterialProperties {
-  density: MaterialProperty;
-  expansion: MaterialProperty;
-  tensileStrength: MaterialProperty;
-  yieldStrength: MaterialProperty;
-  hardness: MaterialProperty;
+  density?: MaterialProperty;
+  expansion?: MaterialProperty;
+  tensileStrength?: MaterialProperty;
+  yieldStrength?: MaterialProperty;
+  hardness?: MaterialProperty;
 }
 
 export interface EnhancedMaterial {
@@ -31,6 +32,17 @@ export interface EnhancedMaterial {
   applications?: string[];
   properties?: MaterialProperties;
 }
+
+export type MaterialShape =
+  | "rectangle"
+  | "round"
+  | "tube"
+  | "square_tube"
+  | "hex"
+  | "angle"
+  | "channel"
+  | "ibeam"
+  | "sheet";
 
 export interface MaterialFilter {
   category?: string;

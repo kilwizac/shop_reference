@@ -44,31 +44,38 @@ export function Header({ variant = "default" }: HeaderProps) {
                 </span>
               </button>
               {isReferencesOpen && (
-                <div className="absolute top-full mt-2 left-0 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 min-w-[200px] shadow-lg z-50">
+                <div className="absolute top-full mt-2 left-0 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 min-w-[200px] shadow-lg z-[var(--z-dropdown)]">
                   <Link
                     href="/tolerances"
-                    className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800 transition-colors"
                     onClick={() => setIsReferencesOpen(false)}
                   >
                     Tolerances
                   </Link>
                   <Link
                     href="/materials"
-                    className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800 transition-colors"
                     onClick={() => setIsReferencesOpen(false)}
                   >
                     Materials
                   </Link>
                   <Link
+                    href="/tooling"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800 transition-colors"
+                    onClick={() => setIsReferencesOpen(false)}
+                  >
+                    Tooling
+                  </Link>
+                  <Link
                     href="/processes"
-                    className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800 transition-colors"
                     onClick={() => setIsReferencesOpen(false)}
                   >
                     Processes
                   </Link>
                   <Link
                     href="/standards"
-                    className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
                     onClick={() => setIsReferencesOpen(false)}
                   >
                     Standards
@@ -93,24 +100,31 @@ export function Header({ variant = "default" }: HeaderProps) {
                 </span>
               </button>
               {isCalculatorsOpen && (
-                <div className="absolute top-full mt-2 left-0 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 min-w-[200px] shadow-lg z-50">
+                <div className="absolute top-full mt-2 left-0 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 min-w-[200px] shadow-lg z-[var(--z-dropdown)]">
                   <Link
                     href="/thread-calculator"
-                    className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800 transition-colors"
                     onClick={() => setIsCalculatorsOpen(false)}
                   >
                     Thread Calculator
                   </Link>
                   <Link
                     href="/tolerance-calculator"
-                    className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800 transition-colors"
                     onClick={() => setIsCalculatorsOpen(false)}
                   >
                     Tolerance Calculator
                   </Link>
                   <Link
+                    href="/shop-math"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800 transition-colors"
+                    onClick={() => setIsCalculatorsOpen(false)}
+                  >
+                    Shop Math
+                  </Link>
+                  <Link
                     href="/material-calculator"
-                    className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
                     onClick={() => setIsCalculatorsOpen(false)}
                   >
                     Material Calculator
@@ -163,28 +177,35 @@ export function Header({ variant = "default" }: HeaderProps) {
                 <div className="space-y-1">
                   <Link
                     href="/tolerances"
-                    className="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                    className="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Tolerances
                   </Link>
                   <Link
                     href="/materials"
-                    className="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                    className="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Materials
                   </Link>
                   <Link
+                    href="/tooling"
+                    className="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Tooling
+                  </Link>
+                  <Link
                     href="/processes"
-                    className="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                    className="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Processes
                   </Link>
                   <Link
                     href="/standards"
-                    className="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                    className="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Standards
@@ -198,21 +219,28 @@ export function Header({ variant = "default" }: HeaderProps) {
                 <div className="space-y-1">
                   <Link
                     href="/thread-calculator"
-                    className="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                    className="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Thread Calculator
                   </Link>
                   <Link
                     href="/tolerance-calculator"
-                    className="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                    className="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Tolerance Calculator
                   </Link>
                   <Link
+                    href="/shop-math"
+                    className="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Shop Math
+                  </Link>
+                  <Link
                     href="/material-calculator"
-                    className="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                    className="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Material Calculator
@@ -224,14 +252,14 @@ export function Header({ variant = "default" }: HeaderProps) {
               <div className="space-y-1">
                 <Link
                   href="/about"
-                  className="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                  className="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   About
                 </Link>
                 <Link
                   href="/material-compare"
-                  className="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                  className="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Material Compare

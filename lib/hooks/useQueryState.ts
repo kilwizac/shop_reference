@@ -1,6 +1,61 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import type { SerializableState, SerializableValue } from "../types/state";
+
+const isObjectLike = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const isSerializableValue = (value: unknown): value is SerializableValue =>
+  typeof value === "string" ||
+  typeof value === "number" ||
+  typeof value === "boolean" ||
+  value === null ||
+  (Array.isArray(value) && value.every(isSerializableValue)) ||
+  (isObjectLike(value) && Object.values(value).every(isSerializableValue));
+
+const coerceParamValue = (
+  paramValue: string,
+  template: SerializableValue | undefined
+): SerializableValue | undefined => {
+  const decodedValue = decodeURIComponent(paramValue);
+
+  const matchesTemplate = (candidate: unknown): candidate is SerializableValue => {
+    if (!isSerializableValue(candidate)) return false;
+    if (template === null) return candidate === null;
+    if (template === undefined) return false;
+    if (Array.isArray(template)) return Array.isArray(candidate);
+    if (isObjectLike(template)) return isObjectLike(candidate);
+    return typeof candidate === typeof template;
+  };
+
+  try {
+    const parsed = JSON.parse(decodedValue) as unknown;
+    if (matchesTemplate(parsed)) {
+      return parsed;
+    }
+  } catch {
+    // Fall back to primitive coercion
+  }
+
+  if (template === undefined) return undefined;
+  if (template === null) return null;
+
+  if (typeof template === "number") {
+    const parsedNumber = Number(decodedValue);
+    return Number.isFinite(parsedNumber) ? parsedNumber : undefined;
+  }
+
+  if (typeof template === "boolean") {
+    return decodedValue === "true";
+  }
+
+  if (typeof template === "string") {
+    return decodedValue;
+  }
+
+  return undefined;
+};
 
 /**
  * Custom hook to sync form state with URL query parameters
@@ -15,7 +70,7 @@ import { useCallback, useEffect, useState } from "react";
  *   'calc'
  * );
  */
-export function useQueryState<T extends Record<string, any>>(
+export function useQueryState<T extends SerializableState>(
   initialState: T,
   prefix: string = ""
 ) {
@@ -43,13 +98,9 @@ export function useQueryState<T extends Record<string, any>>(
       const paramValue = params.get(paramKey);
 
       if (paramValue !== null) {
-        // Try to preserve type
-        if (typeof value === "number") {
-          urlState[key as keyof T] = Number(paramValue) as any;
-        } else if (typeof value === "boolean") {
-          urlState[key as keyof T] = (paramValue === "true") as any;
-        } else {
-          urlState[key as keyof T] = paramValue as any;
+        const parsedValue = coerceParamValue(paramValue, value as SerializableValue);
+        if (parsedValue !== undefined) {
+          urlState[key as keyof T] = parsedValue as T[keyof T];
         }
       }
     }
@@ -156,7 +207,7 @@ export function useQueryState<T extends Record<string, any>>(
  *   'calc'
  * );
  */
-export function useQueryStateWithStorage<T extends Record<string, any>>(
+export function useQueryStateWithStorage<T extends SerializableState>(
   storageKey: string,
   initialState: T,
   urlPrefix: string = ""

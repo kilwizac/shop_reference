@@ -1,5 +1,11 @@
 import { Metadata } from 'next'
 
+interface StructuredData {
+  '@context': string;
+  '@type': string;
+  [key: string]: unknown;
+}
+
 export interface SEOConfig {
   title: string
   description: string
@@ -21,7 +27,7 @@ export interface SEOConfig {
     creator?: string
     site?: string
   }
-  structuredData?: any
+  structuredData?: StructuredData
 }
 
 export function generateMetadata(config: SEOConfig): Metadata {
@@ -98,9 +104,7 @@ export function generateMetadata(config: SEOConfig): Metadata {
   }
 }
 
-// Calculator-specific metadata generators
 export const calculatorMetadata = {
-
   threadCalculator: (): SEOConfig => ({
     title: 'Thread Calculator',
     description: 'Calculate tap drill sizes, thread depths, and thread specifications for imperial and metric threads. Includes UNC, UNF, UNEF, and NPT thread calculations.',
@@ -231,7 +235,6 @@ export const calculatorMetadata = {
   }),
 }
 
-// Reference page metadata
 export const referenceMetadata = {
   tolerances: (): SEOConfig => ({
     title: 'Tolerance Reference',

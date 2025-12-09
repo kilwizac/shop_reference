@@ -38,7 +38,7 @@ export default function ProcessesPage() {
                   </span>
                 </button>
                 {isReferencesOpen && (
-                  <div className="absolute top-full mt-2 left-0 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 min-w-[200px] shadow-lg z-50">
+                  <div className="absolute top-full mt-2 left-0 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 min-w-[200px] shadow-lg z-[var(--z-dropdown)]">
                     <Link
                       href="/tolerances"
                       className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
@@ -87,7 +87,7 @@ export default function ProcessesPage() {
                   </span>
                 </button>
                 {isCalculatorsOpen && (
-                  <div className="absolute top-full mt-2 left-0 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 min-w-[200px] shadow-lg z-50">
+                  <div className="absolute top-full mt-2 left-0 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 min-w-[200px] shadow-lg z-[var(--z-dropdown)]">
                   <Link
                     href="/thread-calculator"
                       className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"

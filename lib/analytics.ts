@@ -1,8 +1,11 @@
-// Analytics and SEO monitoring utilities
-
 export const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID || '';
 
-// Google Analytics 4 tracking
+interface WebVitalsMetric {
+  name: string;
+  value: number;
+  id: string;
+}
+
 export const pageview = (url: string) => {
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('config', GA_TRACKING_ID, {
@@ -26,7 +29,6 @@ export const event = ({ action, category, label, value }: {
   }
 };
 
-// SEO-specific tracking
 export const trackCalculatorUsage = (calculatorName: string, action: string) => {
   event({
     action: action,
@@ -44,8 +46,7 @@ export const trackSearch = (query: string, results: number) => {
   });
 };
 
-// Core Web Vitals tracking
-export const trackWebVitals = (metric: any) => {
+export const trackWebVitals = (metric: WebVitalsMetric) => {
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('event', metric.name, {
       value: Math.round(metric.value),
@@ -56,9 +57,21 @@ export const trackWebVitals = (metric: any) => {
   }
 };
 
-// Declare gtag function for TypeScript
+type GtagEventParams = {
+  event_category?: string;
+  event_label?: string;
+  value?: number;
+  page_path?: string;
+  non_interaction?: boolean;
+  [key: string]: string | number | boolean | undefined;
+};
+
 declare global {
   interface Window {
-    gtag: (...args: any[]) => void;
+    gtag: (
+      command: 'config' | 'event',
+      targetIdOrEventName: string,
+      params?: GtagEventParams
+    ) => void;
   }
 }

@@ -169,9 +169,9 @@ export function DrillChart({ data, className = '' }: DrillChartProps) {
 
       {/* Selected Size Details Modal */}
       {selectedSize && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setSelectedSize(null)} />
-          <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 p-6">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center">
+          <div className="fixed inset-0 bg-black/50 z-[var(--z-modal-backdrop)]" onClick={() => setSelectedSize(null)} />
+          <div className="relative z-[var(--z-modal)] bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-gray-900">
                 Drill Size {selectedSize.size} Details

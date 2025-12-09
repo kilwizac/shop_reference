@@ -1,53 +1,31 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { NumberInput } from "@/components/NumberInput";
-import { SettingsPanel } from "@/components/SettingsPanel";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import {
   validateNominalSize,
   validateTolerance,
 } from "@/lib/utils/validation";
 import {
-  calculateITTolerance,
-  calculateShaftDeviation,
   calculateFit,
   calculateBilateralTolerance,
   convertRoughness,
 } from "@/lib/calc";
 
 export default function ToleranceCalculatorClient() {
-  const [isReferencesOpen, setIsReferencesOpen] = useState(false);
-  const [isCalculatorsOpen, setIsCalculatorsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("fit-calculator");
-  const [units, setUnits] = useState<"imperial" | "metric">("metric");
 
-  // Fit Calculator State
   const [nominalSize, setNominalSize] = useState("");
   const [holeTolerance, setHoleTolerance] = useState("H7");
   const [shaftTolerance, setShaftTolerance] = useState("g6");
-
-  // Bilateral Tolerance State
   const [nominalDimension, setNominalDimension] = useState("");
   const [upperDeviation, setUpperDeviation] = useState("");
   const [lowerDeviation, setLowerDeviation] = useState("");
-
-  // Surface Roughness State
   const [raValue, setRaValue] = useState("");
   const [fromUnit, setFromUnit] = useState<"micrometers" | "microinches">("micrometers");
 
-  // Calculate IT grade tolerance value
-  const calculateITToleranceLocal = (nominal: number, grade: number): number => {
-    return calculateITTolerance(nominal, grade);
-  };
-
-  // Calculate fundamental deviation for shafts
-  const calculateShaftDeviationLocal = (nominal: number, letter: string): { upper: number; lower: number } => {
-    return calculateShaftDeviation(nominal, letter);
-  };
-
-
-  // Calculate fit
   const calculateFitLocal = () => {
     const nominal = Number.parseFloat(nominalSize);
     if (!nominal) return null;
@@ -55,7 +33,6 @@ export default function ToleranceCalculatorClient() {
     return calculateFit(nominal, holeTolerance, shaftTolerance);
   };
 
-  // Calculate bilateral tolerance
   const calculateBilateralToleranceLocal = () => {
     const nominal = Number.parseFloat(nominalDimension);
     const upper = Number.parseFloat(upperDeviation);
@@ -66,7 +43,6 @@ export default function ToleranceCalculatorClient() {
     return calculateBilateralTolerance(nominal, upper, lower);
   };
 
-  // Convert surface roughness
   const convertRoughnessLocal = () => {
     const value = Number.parseFloat(raValue);
     if (!value) return null;
@@ -80,127 +56,8 @@ export default function ToleranceCalculatorClient() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
-      {/* Navigation */}
-      <nav className="border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <Link
-              href="/"
-              className="text-xl font-bold hover:opacity-60 transition-opacity"
-            >
-              SpecFoundry
-            </Link>
-            <div className="flex gap-8 items-center">
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    const newState = !isReferencesOpen;
-                    setIsReferencesOpen(newState);
-                    if (newState) {
-                      setIsCalculatorsOpen(false);
-                    }
-                  }}
-                  className="hover:opacity-60 transition-opacity text-sm flex items-center gap-1"
-                >
-                  References
-                  <span className="text-xs">
-                    {isReferencesOpen ? "▲" : "▼"}
-                  </span>
-                </button>
-                {isReferencesOpen && (
-                  <div className="absolute top-full mt-2 left-0 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 min-w-[200px] shadow-lg z-50">
-                    <Link
-                      href="/tolerances"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
-                      onClick={() => setIsReferencesOpen(false)}
-                    >
-                      Tolerances
-                    </Link>
-                    <Link
-                      href="/materials"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
-                      onClick={() => setIsReferencesOpen(false)}
-                    >
-                      Materials
-                    </Link>
-                    <Link
-                      href="/processes"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
-                      onClick={() => setIsReferencesOpen(false)}
-                    >
-                      Processes
-                    </Link>
-                    <Link
-                      href="/standards"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900"
-                      onClick={() => setIsReferencesOpen(false)}
-                    >
-                      Standards
-                    </Link>
-                  </div>
-                )}
-              </div>
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    const newState = !isCalculatorsOpen;
-                    setIsCalculatorsOpen(newState);
-                    if (newState) {
-                      setIsReferencesOpen(false);
-                    }
-                  }}
-                  className="hover:opacity-60 transition-opacity text-sm flex items-center gap-1"
-                >
-                  Calculators
-                  <span className="text-xs">
-                    {isCalculatorsOpen ? "▲" : "▼"}
-                  </span>
-                </button>
-                {isCalculatorsOpen && (
-                  <div className="absolute top-full mt-2 left-0 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 min-w-[200px] shadow-lg z-50">
-                  <Link
-                    href="/thread-calculator"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
-                      onClick={() => setIsCalculatorsOpen(false)}
-                    >
-                      Thread Calculator
-                    </Link>
-                    <Link
-                      href="/tolerance-calculator"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
-                      onClick={() => setIsCalculatorsOpen(false)}
-                    >
-                      Tolerance Calculator
-                    </Link>
-                    <Link
-                      href="/material-calculator"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900"
-                      onClick={() => setIsCalculatorsOpen(false)}
-                    >
-                      Material Calculator
-                    </Link>
-                  </div>
-                )}
-              </div>
-              <Link
-                href="/about"
-                className="hover:opacity-60 transition-opacity text-sm"
-              >
-                About
-              </Link>
-              <Link
-                href="/material-compare"
-                className="hover:opacity-60 transition-opacity text-sm"
-              >
-                Material Compare
-              </Link>
-              <SettingsPanel />
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
-      {/* Header */}
       <section className="border-b border-gray-200 dark:border-gray-800 py-12">
         <div className="max-w-6xl mx-auto px-6">
           <div className="font-mono text-xs text-gray-500 dark:text-gray-500 mb-2 tracking-wider">
@@ -213,10 +70,9 @@ export default function ToleranceCalculatorClient() {
         </div>
       </section>
 
-      {/* Tab Navigation */}
       <section className="border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="flex gap-1 overflow-x-auto">
+          <div className="flex gap-2 overflow-x-auto">
             <button
               onClick={() => setActiveTab("fit-calculator")}
               className={`px-6 py-3 font-medium text-sm transition-colors whitespace-nowrap ${
@@ -261,14 +117,11 @@ export default function ToleranceCalculatorClient() {
         </div>
       </section>
 
-      {/* Main Content */}
       <section className="py-12">
         <div className="max-w-6xl mx-auto px-6">
-          {/* Fit Calculator */}
           {activeTab === "fit-calculator" && (
             <div className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Input Section */}
                 <div className="lg:col-span-2 border border-gray-300 dark:border-gray-700 p-6">
                   <h2 className="text-xl font-bold mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                     Input Parameters
@@ -328,10 +181,9 @@ export default function ToleranceCalculatorClient() {
                     </div>
                   </div>
 
-                  {/* Formulas */}
                   <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700">
                     <h3 className="text-xs font-bold mb-2">ISO 286 TOLERANCE GRADES:</h3>
-                    <div className="space-y-1 text-xs font-mono text-gray-600 dark:text-gray-400">
+                    <div className="space-y-2 text-xs font-mono text-gray-600 dark:text-gray-400">
                       <div>IT5-IT7: Precision fits, bearing assemblies</div>
                       <div>IT8-IT10: General purpose machining</div>
                       <div>IT11-IT13: Rough machining, castings</div>
@@ -339,7 +191,6 @@ export default function ToleranceCalculatorClient() {
                   </div>
                 </div>
 
-                {/* Results Section */}
                 <div className="space-y-3">
                   <div className="border border-gray-300 dark:border-gray-700 bg-black dark:bg-white text-white dark:text-black p-4">
                     <div className="font-mono text-xs mb-1 opacity-70">
@@ -382,7 +233,6 @@ export default function ToleranceCalculatorClient() {
                 </div>
               </div>
 
-              {/* Detailed Results */}
               {fitResults && (
                 <div className="border-t-2 border-gray-300 dark:border-gray-700 pt-8">
                   <h3 className="text-lg font-bold mb-4">Detailed Dimensions</h3>
@@ -430,7 +280,6 @@ export default function ToleranceCalculatorClient() {
                 </div>
               )}
 
-              {/* Common Fits Reference */}
               <div className="border-t-2 border-gray-300 dark:border-gray-700 pt-8">
                 <h3 className="text-lg font-bold mb-4">Common ISO 286 Fits</h3>
                 <div className="border border-gray-200 dark:border-gray-800 overflow-x-auto">
@@ -505,11 +354,9 @@ export default function ToleranceCalculatorClient() {
             </div>
           )}
 
-          {/* Bilateral Tolerance Calculator */}
           {activeTab === "bilateral" && (
             <div className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Input Section */}
                 <div className="lg:col-span-2 border border-gray-300 dark:border-gray-700 p-6">
                   <h2 className="text-xl font-bold mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                     Input Parameters
@@ -549,10 +396,9 @@ export default function ToleranceCalculatorClient() {
                     />
                   </div>
 
-                  {/* Info */}
                   <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700">
                     <h3 className="text-xs font-bold mb-2">BILATERAL TOLERANCE:</h3>
-                    <div className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
+                    <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
                       <div>• Upper deviation: Plus (+) tolerance from nominal</div>
                       <div>• Lower deviation: Minus (-) tolerance from nominal</div>
                       <div>• Example: 50.000 +0.025/-0.025 mm</div>
@@ -560,7 +406,6 @@ export default function ToleranceCalculatorClient() {
                   </div>
                 </div>
 
-                {/* Results Section */}
                 <div className="space-y-3">
                   <div className="border border-gray-300 dark:border-gray-700 bg-black dark:bg-white text-white dark:text-black p-4">
                     <div className="font-mono text-xs mb-1 opacity-70">
@@ -613,16 +458,15 @@ export default function ToleranceCalculatorClient() {
                 </div>
               </div>
 
-              {/* Tolerance Types Reference */}
               <div className="border-t-2 border-gray-300 dark:border-gray-700 pt-8">
                 <h3 className="text-lg font-bold mb-4">Tolerance Notation Types</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="border border-gray-300 dark:border-gray-700 p-5">
-                    <h4 className="text-sm font-bold mb-3 pb-2 border-b border-gray-200 dark:border-gray-800">
+                  <div className="border border-gray-300 dark:border-gray-700 p-4">
+                    <h4 className="text-sm font-bold mb-3 pb-3 border-b border-gray-200 dark:border-gray-800">
                       BILATERAL (EQUAL)
                     </h4>
-                    <div className="font-mono text-2xl mb-2">50 ± 0.05</div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                    <div className="font-mono text-2xl mb-3">50 ± 0.05</div>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
                       Equal tolerance in both directions
                     </p>
                     <div className="text-xs text-gray-600 dark:text-gray-400">
@@ -631,14 +475,14 @@ export default function ToleranceCalculatorClient() {
                     </div>
                   </div>
 
-                  <div className="border border-gray-300 dark:border-gray-700 p-5">
-                    <h4 className="text-sm font-bold mb-3 pb-2 border-b border-gray-200 dark:border-gray-800">
+                  <div className="border border-gray-300 dark:border-gray-700 p-4">
+                    <h4 className="text-sm font-bold mb-3 pb-3 border-b border-gray-200 dark:border-gray-800">
                       BILATERAL (UNEQUAL)
                     </h4>
-                    <div className="font-mono text-2xl mb-2">
+                    <div className="font-mono text-2xl mb-3">
                       50 <sup className="text-sm">+0.03</sup><sub className="text-sm">-0.02</sub>
                     </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
                       Different tolerance each direction
                     </p>
                     <div className="text-xs text-gray-600 dark:text-gray-400">
@@ -647,14 +491,14 @@ export default function ToleranceCalculatorClient() {
                     </div>
                   </div>
 
-                  <div className="border border-gray-300 dark:border-gray-700 p-5">
-                    <h4 className="text-sm font-bold mb-3 pb-2 border-b border-gray-200 dark:border-gray-800">
+                  <div className="border border-gray-300 dark:border-gray-700 p-4">
+                    <h4 className="text-sm font-bold mb-3 pb-3 border-b border-gray-200 dark:border-gray-800">
                       UNILATERAL
                     </h4>
-                    <div className="font-mono text-2xl mb-2">
+                    <div className="font-mono text-2xl mb-3">
                       50 <sup className="text-sm">+0.05</sup><sub className="text-sm">0</sub>
                     </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
                       Tolerance in one direction only
                     </p>
                     <div className="text-xs text-gray-600 dark:text-gray-400">
@@ -667,11 +511,9 @@ export default function ToleranceCalculatorClient() {
             </div>
           )}
 
-          {/* Surface Roughness Converter */}
           {activeTab === "surface-roughness" && (
             <div className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Input Section */}
                 <div className="lg:col-span-2 border border-gray-300 dark:border-gray-700 p-6">
                   <h2 className="text-xl font-bold mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                     Input Parameters
@@ -702,10 +544,9 @@ export default function ToleranceCalculatorClient() {
                     </div>
                   </div>
 
-                  {/* Info */}
                   <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700">
                     <h3 className="text-xs font-bold mb-2">SURFACE ROUGHNESS:</h3>
-                    <div className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
+                    <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
                       <div>• Ra: Arithmetic average roughness</div>
                       <div>• RMS: Root mean square roughness</div>
                       <div>• Rz: Average peak-to-valley height</div>
@@ -713,7 +554,6 @@ export default function ToleranceCalculatorClient() {
                   </div>
                 </div>
 
-                {/* Results Section */}
                 <div className="space-y-3">
                   <div className="border border-gray-300 dark:border-gray-700 bg-black dark:bg-white text-white dark:text-black p-4">
                     <div className="font-mono text-xs mb-1 opacity-70">
@@ -763,7 +603,6 @@ export default function ToleranceCalculatorClient() {
                 </div>
               </div>
 
-              {/* Surface Finish Reference */}
               <div className="border-t-2 border-gray-300 dark:border-gray-700 pt-8">
                 <h3 className="text-lg font-bold mb-4">Surface Finish by Process</h3>
                 <div className="border border-gray-200 dark:border-gray-800 overflow-x-auto">
@@ -820,7 +659,6 @@ export default function ToleranceCalculatorClient() {
             </div>
           )}
 
-          {/* Tolerance Reference Tab */}
           {activeTab === "reference" && (
             <div className="space-y-8">
               <div>
@@ -831,7 +669,7 @@ export default function ToleranceCalculatorClient() {
                     <h3 className="text-lg font-bold mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                       ISO Tolerance Grades
                     </h3>
-                    <div className="space-y-3 text-sm">
+                    <div className="space-y-4 text-sm">
                       <div>
                         <span className="font-bold">IT01 - IT5:</span>
                         <p className="text-gray-600 dark:text-gray-400">
@@ -869,7 +707,7 @@ export default function ToleranceCalculatorClient() {
                     <h3 className="text-lg font-bold mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                       Fit Types
                     </h3>
-                    <div className="space-y-3 text-sm">
+                    <div className="space-y-4 text-sm">
                       <div>
                         <span className="font-bold">Clearance Fit:</span>
                         <p className="text-gray-600 dark:text-gray-400">
@@ -896,10 +734,10 @@ export default function ToleranceCalculatorClient() {
                   <h3 className="text-lg font-bold mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                     General Tolerance Standards
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <h4 className="text-sm font-bold mb-2">ISO 2768 - General Tolerances</h4>
-                      <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                      <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                         <li>• f (fine): ±0.05 to ±0.2 mm</li>
                         <li>• m (medium): ±0.1 to ±0.5 mm</li>
                         <li>• c (coarse): ±0.2 to ±1.0 mm</li>
@@ -908,7 +746,7 @@ export default function ToleranceCalculatorClient() {
                     </div>
                     <div>
                       <h4 className="text-sm font-bold mb-2">Decimal Place Guidelines</h4>
-                      <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                      <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                         <li>• ±0.X mm: Rough machining</li>
                         <li>• ±0.0X mm: Standard machining</li>
                         <li>• ±0.00X mm: Precision machining</li>
@@ -922,10 +760,10 @@ export default function ToleranceCalculatorClient() {
                   <h3 className="text-lg font-bold mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                     GD&T Tolerance Symbols
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <h4 className="text-sm font-bold mb-2">Form Tolerances</h4>
-                      <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                      <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                         <li>• Straightness - Controls line elements</li>
                         <li>• Flatness - Controls surface deviation</li>
                         <li>• Circularity - Controls roundness</li>
@@ -934,7 +772,7 @@ export default function ToleranceCalculatorClient() {
                     </div>
                     <div>
                       <h4 className="text-sm font-bold mb-2">Location Tolerances</h4>
-                      <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                      <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                         <li>• Position - Controls feature location</li>
                         <li>• Concentricity - Controls center alignment</li>
                         <li>• Symmetry - Controls symmetrical features</li>
@@ -949,14 +787,7 @@ export default function ToleranceCalculatorClient() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-200 dark:border-gray-800 py-10 mt-12">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-            <p>&copy; 2024 SpecFoundry. Built for engineers.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

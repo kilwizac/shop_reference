@@ -6,7 +6,6 @@ import { SearchState, SearchProviderValue, SearchResult, SearchableItem } from '
 import { getSearchIndex } from '../search/indexBuilder';
 import { searchItems } from '../search/searchEngine';
 
-// Search actions
 type SearchAction = 
   | { type: 'OPEN_SEARCH' }
   | { type: 'CLOSE_SEARCH' }
@@ -16,7 +15,6 @@ type SearchAction =
   | { type: 'SET_SELECTED_INDEX'; payload: number }
   | { type: 'RESET' };
 
-// Initial state
 const initialState: SearchState = {
   isOpen: false,
   query: '',
@@ -25,7 +23,6 @@ const initialState: SearchState = {
   isLoading: false
 };
 
-// Search reducer
 function searchReducer(state: SearchState, action: SearchAction): SearchState {
   switch (action.type) {
     case 'OPEN_SEARCH':
@@ -54,16 +51,12 @@ function searchReducer(state: SearchState, action: SearchAction): SearchState {
   }
 }
 
-// Create context
 const SearchContext = createContext<SearchProviderValue | undefined>(undefined);
 
-// Search provider component
 export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(searchReducer, initialState);
   const router = useRouter();
   const searchTimeoutRef = useRef<number | null>(null);
-  
-  // Get search index (memoized)
   const searchIndex = React.useMemo(() => getSearchIndex(), []);
 
   const clearSearchTimeout = useCallback(() => {
@@ -72,18 +65,15 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
       searchTimeoutRef.current = null;
     }
   }, []);
-  
-  // Open search
+
   const openSearch = useCallback(() => {
     dispatch({ type: 'OPEN_SEARCH' });
   }, []);
-  
-  // Close search
+
   const closeSearch = useCallback(() => {
     dispatch({ type: 'CLOSE_SEARCH' });
   }, []);
-  
-  // Set query and search
+
   const setQuery = useCallback((query: string) => {
     dispatch({ type: 'SET_QUERY', payload: query });
     clearSearchTimeout();
@@ -105,13 +95,11 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
       searchTimeoutRef.current = null;
     }, 150);
   }, [clearSearchTimeout, searchIndex]);
-  
-  // Select result
+
   const selectResult = useCallback((index: number) => {
     dispatch({ type: 'SET_SELECTED_INDEX', payload: index });
   }, []);
-  
-  // Execute action
+
   const executeAction = useCallback((action: SearchResult['action']) => {
     switch (action.type) {
       case 'navigate':
@@ -124,23 +112,23 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
       case 'copy':
         if (action.payload.data) {
           if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
-            void navigator.clipboard.writeText(action.payload.data).catch(console.error);
+            const textToCopy = typeof action.payload.data === 'string' 
+              ? action.payload.data 
+              : JSON.stringify(action.payload.data);
+            void navigator.clipboard.writeText(textToCopy).catch(console.error);
           }
           closeSearch();
         }
         break;
       
       case 'calculate':
-        // Handle calculation actions
-        console.log('Calculate action:', action.payload);
+        break;
         break;
     }
   }, [router, closeSearch]);
-  
-  // Keyboard shortcuts
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Cmd+K or Ctrl+K to open search
       if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
         event.preventDefault();
         if (state.isOpen) {
@@ -150,8 +138,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
         }
         return;
       }
-      
-      // Handle search navigation when open
+
       if (state.isOpen) {
         switch (event.key) {
           case 'Escape':
@@ -201,7 +188,6 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Hook to use search context
 export function useSearch() {
   const context = useContext(SearchContext);
   if (context === undefined) {

@@ -36,11 +36,11 @@ export function MobileFAB({ className = "" }: MobileFABProps) {
   ];
 
   return (
-    <div className={`lg:hidden fixed bottom-4 right-4 z-40 ${className}`}>
+    <div className={`lg:hidden fixed bottom-4 right-4 z-[var(--z-fab)] ${className}`}>
       {/* Quick Actions Menu */}
       {isExpanded && (
         <div className="absolute bottom-16 right-0 mb-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 min-w-[200px]">
-          {quickActions.map((action, index) => (
+          {quickActions.map((action) => (
             <a
               key={action.href}
               href={action.href}

@@ -1,29 +1,30 @@
 import { ReactNode } from "react";
 
-interface TableColumn {
-  key: string;
+interface TableColumn<T extends Record<string, unknown>> {
+  key: Extract<keyof T, string>;
   label: string;
   align?: "left" | "center" | "right";
   className?: string;
+  render?: (value: T[Extract<keyof T, string>], row: T) => ReactNode;
 }
 
-interface TableProps {
-  columns: TableColumn[];
-  data: Record<string, any>[];
+interface TableProps<T extends Record<string, unknown>> {
+  columns: TableColumn<T>[];
+  data: T[];
   className?: string;
   headerClassName?: string;
   rowClassName?: string;
   cellClassName?: string;
 }
 
-export function Table({
+export function Table<T extends Record<string, unknown>>({
   columns,
   data,
   className = "",
   headerClassName = "",
   rowClassName = "",
   cellClassName = "",
-}: TableProps) {
+}: TableProps<T>) {
   return (
     <div className={`border border-gray-200 dark:border-gray-800 ${className}`}>
       <table className="w-full">
@@ -32,7 +33,7 @@ export function Table({
             {columns.map((column) => (
               <th
                 key={column.key}
-                className={`text-${column.align || "left"} p-4 font-bold text-sm ${column.className || ""}`}
+                className={`text-${column.align || "left"} p-3 font-bold text-sm ${column.className || ""}`}
               >
                 {column.label}
               </th>
@@ -48,9 +49,11 @@ export function Table({
               {columns.map((column) => (
                 <td
                   key={column.key}
-                  className={`text-${column.align || "left"} p-4 text-sm ${cellClassName}`}
+                  className={`text-${column.align || "left"} p-3 text-sm ${cellClassName}`}
                 >
-                  {row[column.key]}
+                  {column.render
+                    ? column.render(row[column.key], row)
+                    : (row[column.key] as ReactNode)}
                 </td>
               ))}
             </tr>

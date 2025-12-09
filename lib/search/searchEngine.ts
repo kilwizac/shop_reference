@@ -127,37 +127,31 @@ export function searchItems(query: string, items: SearchableItem[]): SearchResul
 }
 
 /**
- * Get search suggestions based on query
+ * Escape HTML entities to prevent XSS attacks
  */
-export function getSuggestions(query: string, items: SearchableItem[]): string[] {
-  if (!query.trim()) return [];
-  
-  const suggestions = new Set<string>();
-  const queryLower = query.toLowerCase();
-  
-  for (const item of items) {
-    // Add title suggestions
-    if (item.title.toLowerCase().includes(queryLower)) {
-      suggestions.add(item.title);
-    }
-    
-    // Add keyword suggestions
-    for (const keyword of item.keywords) {
-      if (keyword.toLowerCase().includes(queryLower)) {
-        suggestions.add(keyword);
-      }
-    }
-  }
-  
-  return Array.from(suggestions).slice(0, 5);
+function escapeHtml(text: string): string {
+  const htmlEntities: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  };
+  return text.replace(/[&<>"']/g, (char) => htmlEntities[char] || char);
 }
 
 /**
  * Highlight matching text in search results
+ * HTML-escapes both text and query to prevent XSS attacks
  */
 export function highlightMatch(text: string, query: string): string {
-  if (!query.trim()) return text;
+  if (!query.trim()) return escapeHtml(text);
   
-  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-  return text.replace(regex, '<mark>$1</mark>');
+  // Escape HTML entities in the original text first
+  const escapedText = escapeHtml(text);
+  const escapedQuery = escapeHtml(query);
+  
+  // Create regex from escaped query (also escape regex special chars)
+  const regex = new RegExp(`(${escapedQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  return escapedText.replace(regex, '<mark>$1</mark>');
 }

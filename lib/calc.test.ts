@@ -4,7 +4,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { calculateWeightWithUnits } from './calc';
+import { calculateWeightWithUnits, calculateVolume, calculateSectionProperties } from './calc';
+import { validateMaterialInputs } from './utils/validation';
 
 describe('Material Calculator Unit Conversions', () => {
   it('should calculate weight correctly for imperial units', () => {
@@ -59,5 +60,26 @@ describe('Material Calculator Unit Conversions', () => {
     
     // Both should give the same weight in kg
     expect(imperialResult!.weightKg).toBeCloseTo(metricResult!.weightKg, 3);
+  });
+});
+
+describe('Material calculations safety', () => {
+  it('should reject invalid dimensions instead of returning NaN', () => {
+    const volume = calculateVolume('rectangle', Number.NaN as unknown as number, 2, 3, 0, 0);
+    expect(volume).toBeNull();
+  });
+
+  it('should compute rectangle section properties with typed shapes', () => {
+    const props = calculateSectionProperties('rectangle', 2, 4, 0, 0);
+    expect(props).not.toBeNull();
+    expect(props?.area).toBeCloseTo(8);
+    expect(props?.Zxx).toBeGreaterThan(0);
+    expect(props?.Zyy).toBeGreaterThan(0);
+  });
+
+  it('validates material inputs and surfaces width errors', () => {
+    const result = validateMaterialInputs('rectangle', '10', '-1', '', '', '');
+    expect(result.width?.isValid).toBe(false);
+    expect(result.width?.warning).toContain('cannot be negative');
   });
 });

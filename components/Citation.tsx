@@ -33,7 +33,7 @@ export function Citation({ citation, property, className = "" }: CitationProps) 
       </button>
 
       {isExpanded && (
-        <div className="absolute z-10 mt-2 w-80 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+        <div className="absolute z-[var(--z-popover)] mt-2 w-80 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
           <div className="text-sm text-gray-700 dark:text-gray-300">
             <div className="font-medium mb-1">Reference:</div>
             <div className="text-xs leading-relaxed">{citation}</div>

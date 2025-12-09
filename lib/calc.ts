@@ -12,19 +12,11 @@ import {
   type UnitSystem
 } from './utils/units';
 import { validateMaterialInputs } from './utils/validation';
+import type { EnhancedMaterial, MaterialShape } from './types/material';
 
 // ============================================================================
 // TYPES
 // ============================================================================
-
-export interface MaterialProperties {
-  name: string;
-  density: number; // lb/in³
-  expansion: number; // ×10⁻⁶ in/in/°F
-  tensileStrength?: number; // ksi
-  yieldStrength?: number; // ksi
-  hardness?: number; // HB
-}
 
 export interface SectionProperties {
   area: number;
@@ -112,6 +104,33 @@ export interface RoughnessResult {
 }
 
 // ============================================================================
+// SHOP MATH TYPES
+// ============================================================================
+
+export interface BoltCircleResult {
+  index: number;
+  angle: number;
+  x: number;
+  y: number;
+}
+
+export interface TriangleResult {
+  a: number; // Side a (opposite A)
+  b: number; // Side b (opposite B)
+  c: number; // Hypotenuse
+  A: number; // Angle A (degrees)
+  B: number; // Angle B (degrees)
+  area: number;
+  perimeter: number;
+}
+
+export interface SineBarResult {
+  blockHeight: number;
+  actualAngle: number;
+  error?: string;
+}
+
+// ============================================================================
 // MATERIAL CALCULATIONS
 // ============================================================================
 
@@ -119,7 +138,7 @@ export interface RoughnessResult {
  * Calculate volume for various shapes
  */
 export function calculateVolume(
-  shape: string,
+  shape: MaterialShape,
   length: number,
   width: number,
   height: number,
@@ -140,53 +159,60 @@ export function calculateVolume(
   if (!length) return null;
 
   switch (shape) {
-    case "rectangle":
+    case "rectangle": {
       if (!width || !height) return null;
       return length * width * height;
+    }
 
-    case "round":
+    case "round": {
       if (!diameter) return null;
       return Math.PI * Math.pow(diameter / 2, 2) * length;
+    }
 
-    case "tube":
+    case "tube": {
       if (!diameter || !wallThickness) return null;
       const outerRadius = diameter / 2;
       const innerRadius = outerRadius - wallThickness;
       return Math.PI * (Math.pow(outerRadius, 2) - Math.pow(innerRadius, 2)) * length;
+    }
 
-    case "square_tube":
+    case "square_tube": {
       if (!width || !wallThickness) return null;
       const outerArea = width * width;
       const innerDim = width - 2 * wallThickness;
       const innerArea = innerDim * innerDim;
       return (outerArea - innerArea) * length;
+    }
 
-    case "hex":
+    case "hex": {
       if (!flatToFlat) return null;
       const side = flatToFlat / Math.sqrt(3);
       const hexArea = (3 * Math.sqrt(3) / 2) * Math.pow(side, 2);
       return hexArea * length;
+    }
 
-    case "angle":
+    case "angle": {
       if (!legWidth || !legHeight || !legThickness) return null;
       const angleArea =
         legWidth * legThickness + legHeight * legThickness - legThickness * legThickness;
       return angleArea * length;
+    }
 
     case "channel":
-    case "ibeam":
+    case "ibeam": {
       if (!flangeWidth || !webHeight || !flangeThickness || !webThickness) return null;
       const structuralArea =
         2 * flangeWidth * flangeThickness + (webHeight - 2 * flangeThickness) * webThickness;
       return structuralArea * length;
+    }
 
-    case "sheet":
+    case "sheet": {
       if (!width || !sheetThickness) return null;
       return length * width * sheetThickness;
-
-    default:
-      return null;
+    }
   }
+
+  return null;
 }
 
 /**
@@ -294,7 +320,7 @@ function calculateIBeamSurfaceArea(
  * Calculate surface area for various shapes
  */
 export function calculateSurfaceArea(
-  shape: string,
+  shape: MaterialShape,
   length: number,
   width: number,
   height: number,
@@ -361,17 +387,16 @@ export function calculateSurfaceArea(
     case "ibeam":
       if (!flangeWidth || !webHeight || !flangeThickness || !webThickness || !length) return 0;
       return calculateIBeamSurfaceArea(flangeWidth, webHeight, flangeThickness, webThickness, length, innerFilletRadius, outerFilletRadius);
-
-    default:
-      return 0;
   }
+
+  return 0;
 }
 
 /**
  * Calculate section properties for various shapes
  */
 export function calculateSectionProperties(
-  shape: string,
+  shape: MaterialShape,
   width: number,
   height: number,
   diameter: number,
@@ -811,13 +836,144 @@ export function convertRoughness(
   }
 }
 
+// ============================================================================
+// SHOP MATH CALCULATIONS
+// ============================================================================
+
+/**
+ * Calculate bolt circle coordinates
+ */
+export function calculateBoltCircle(
+  pcd: number,
+  numHoles: number,
+  startAngle: number = 0
+): BoltCircleResult[] {
+  if (!pcd || !numHoles || numHoles <= 0) return [];
+
+  const radius = pcd / 2;
+  const angleStep = 360 / numHoles;
+  const results: BoltCircleResult[] = [];
+
+  for (let i = 0; i < numHoles; i++) {
+    const angle = startAngle + i * angleStep;
+    // Convert to radians for Math functions (angle - 90 to make 0 at top if needed, but math std is 0 at 3 o'clock)
+    // Let's assume standard mathematical 0 at 3 o'clock (X axis). User can offset with startAngle.
+    const angleRad = (angle * Math.PI) / 180;
+    
+    results.push({
+      index: i + 1,
+      angle: angle,
+      x: radius * Math.cos(angleRad),
+      y: radius * Math.sin(angleRad)
+    });
+  }
+
+  return results;
+}
+
+/**
+ * Calculate sine bar stack height
+ */
+export function calculateSineBar(
+  angle: number,
+  length: number
+): SineBarResult | null {
+  if (!length || angle < 0 || angle > 90) return null;
+
+  // Height = Length * sin(angle)
+  const angleRad = (angle * Math.PI) / 180;
+  const blockHeight = length * Math.sin(angleRad);
+
+  return {
+    blockHeight,
+    actualAngle: angle
+  };
+}
+
+/**
+ * Solve right triangle
+ * Expects at least two inputs, one must be a side.
+ */
+export function solveRightTriangle(
+  input: { a?: number; b?: number; c?: number; A?: number; B?: number }
+): TriangleResult | null {
+  const { a, b, c, A, B } = input;
+  
+  // Convert angles to radians for calculation
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const toDeg = (rad: number) => (rad * 180) / Math.PI;
+
+  // 1. Side + Side
+  if (a && b) {
+    const hyp = Math.sqrt(a * a + b * b);
+    const angA = toDeg(Math.atan(a / b));
+    return { a, b, c: hyp, A: angA, B: 90 - angA, area: 0.5 * a * b, perimeter: a + b + hyp };
+  }
+  if (a && c) {
+    if (a >= c) return null; // Impossible
+    const sideB = Math.sqrt(c * c - a * a);
+    const angA = toDeg(Math.asin(a / c));
+    return { a, b: sideB, c, A: angA, B: 90 - angA, area: 0.5 * a * sideB, perimeter: a + sideB + c };
+  }
+  if (b && c) {
+    if (b >= c) return null; // Impossible
+    const sideA = Math.sqrt(c * c - b * b);
+    const angA = toDeg(Math.acos(b / c));
+    return { a: sideA, b, c, A: angA, B: 90 - angA, area: 0.5 * sideA * b, perimeter: sideA + b + c };
+  }
+
+  // 2. Side + Angle
+  if (a && A) {
+    const angA = A;
+    const sideB = a / Math.tan(toRad(angA));
+    const hyp = a / Math.sin(toRad(angA));
+    return { a, b: sideB, c: hyp, A: angA, B: 90 - angA, area: 0.5 * a * sideB, perimeter: a + sideB + hyp };
+  }
+  if (a && B) {
+    const angB = B;
+    const angA = 90 - B;
+    const sideB = a * Math.tan(toRad(angB));
+    const hyp = a / Math.cos(toRad(angB));
+    return { a, b: sideB, c: hyp, A: angA, B: angB, area: 0.5 * a * sideB, perimeter: a + sideB + hyp };
+  }
+  if (b && A) {
+    const angA = A;
+    const sideA = b * Math.tan(toRad(angA));
+    const hyp = b / Math.cos(toRad(angA));
+    return { a: sideA, b, c: hyp, A: angA, B: 90 - angA, area: 0.5 * sideA * b, perimeter: sideA + b + hyp };
+  }
+  if (b && B) {
+    const angB = B;
+    const sideA = b / Math.tan(toRad(angB));
+    const hyp = b / Math.sin(toRad(angB));
+    return { a: sideA, b, c: hyp, A: 90 - B, B: angB, area: 0.5 * sideA * b, perimeter: sideA + b + hyp };
+  }
+  if (c && A) {
+    const angA = A;
+    const sideA = c * Math.sin(toRad(angA));
+    const sideB = c * Math.cos(toRad(angA));
+    return { a: sideA, b: sideB, c, A: angA, B: 90 - angA, area: 0.5 * sideA * sideB, perimeter: sideA + sideB + c };
+  }
+  if (c && B) {
+    const angB = B;
+    const sideA = c * Math.cos(toRad(angB));
+    const sideB = c * Math.sin(toRad(angB));
+    return { a: sideA, b: sideB, c, A: 90 - B, B: angB, area: 0.5 * sideA * sideB, perimeter: sideA + sideB + c };
+  }
+
+  return null;
+}
+
 
 // ============================================================================
 // MATERIAL DATA AND WEIGHT CALCULATIONS
 // ============================================================================
 
 // Export materials from JSON data
-export const materials: Record<string, MaterialProperties> = materialsData;
+export const materials: Record<string, EnhancedMaterial> = materialsData as Record<
+  string,
+  EnhancedMaterial
+>;
 
 /**
  * Calculate weight with proper unit handling
@@ -831,7 +987,8 @@ export function calculateWeightWithUnits(
   densityLbPerIn3: number,
   unitSystem: UnitSystem
 ) {
-  if (!volume || !densityLbPerIn3) return null;
+  if (!Number.isFinite(volume) || volume <= 0) return null;
+  if (!Number.isFinite(densityLbPerIn3) || densityLbPerIn3 <= 0) return null;
 
   // Convert volume to consistent units (in³) for density calculation
   const volumeIn3 = unitSystem === 'metric' 
@@ -858,4 +1015,3 @@ export function calculateWeightWithUnits(
 
 // Re-export validation function
 export { validateMaterialInputs };
-

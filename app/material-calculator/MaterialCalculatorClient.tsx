@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { NumberInput } from "@/components/NumberInput";
 import { ResultCard } from "@/components/ResultCard";
 import { ShareButton } from "@/components/ShareButton";
-import { SettingsPanel } from "@/components/SettingsPanel";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { useAppSettings } from "@/lib/contexts/AppSettingsContext";
 import { useUrlParams } from "@/lib/hooks/useUrlParams";
 import { useNamespacedStorage } from "@/lib/hooks/useLocalStorage";
@@ -22,21 +22,47 @@ import {
   calculateWeightWithUnits,
 } from "@/lib/calc";
 import { lbPerIn3ToKgPerMm3 } from "@/lib/utils/units";
+import { parseNumber, isPositive } from "@/lib/utils/number";
+import type { EnhancedMaterial, MaterialProperties, MaterialProperty, MaterialShape } from "@/lib/types/material";
+
+type MaterialCalcState = {
+  activeTab: "weight" | "section" | "thermal" | "reference";
+  materialType: keyof typeof materials;
+  shape: MaterialShape;
+  length: string;
+  width: string;
+  height: string;
+  diameter: string;
+  wallThickness: string;
+  flatToFlat: string;
+  legWidth: string;
+  legHeight: string;
+  legThickness: string;
+  flangeWidth: string;
+  flangeThickness: string;
+  webHeight: string;
+  webThickness: string;
+  sheetThickness: string;
+  sheetArea: string;
+  innerFilletRadius: string;
+  outerFilletRadius: string;
+  thermalMaterial: keyof typeof materials;
+  originalLength: string;
+  tempChange: string;
+};
 
 export default function MaterialCalculatorClient() {
-  const [isReferencesOpen, setIsReferencesOpen] = useState(false);
-  const [isCalculatorsOpen, setIsCalculatorsOpen] = useState(false);
   const { formatValue, settings } = useAppSettings();
+  const toNumber = (value: string) => parseNumber(value);
 
-  // Helper function to safely get material
-  const getMaterial = (materialType: string) => {
-    if (!materials || !materialType) return null;
-    return materials[materialType as keyof typeof materials] || null;
+  const getMaterial = (materialType: keyof typeof materials | ""): EnhancedMaterial | null => {
+    if (!materialType) return null;
+    const material = materials[materialType];
+    return material ?? null;
   };
 
 
-  // Persistent preferences
-  const { state: prefs, updateState: updatePrefs, isHydrated } = useNamespacedStorage(
+  const { state: prefs, updateState: updatePrefs, isHydrated } = useNamespacedStorage<MaterialCalcState>(
     "materialCalc_prefs",
     {
       activeTab: "weight",
@@ -68,10 +94,8 @@ export default function MaterialCalculatorClient() {
     }
   );
 
-  // URL params for sharing
   const urlParams = useUrlParams(prefs, "mc");
 
-  // Load from URL on mount
   useEffect(() => {
     if (isHydrated && !urlParams.isInitialized) {
       const urlState = urlParams.getStateFromUrl();
@@ -82,50 +106,39 @@ export default function MaterialCalculatorClient() {
     }
   }, [isHydrated]);
 
-  // Update URL when state changes
   useEffect(() => {
     if (isHydrated && urlParams.isInitialized) {
       urlParams.updateUrl(prefs);
     }
   }, [prefs, isHydrated, urlParams.isInitialized]);
 
-  // Calculate weight
   const calculateWeight = () => {
-    const l = Number.parseFloat(prefs.length);
-    const w = Number.parseFloat(prefs.width);
-    const h = Number.parseFloat(prefs.height);
-    const d = Number.parseFloat(prefs.diameter);
-    const t = Number.parseFloat(prefs.wallThickness);
-    const ftf = Number.parseFloat(prefs.flatToFlat);
-    const lw = Number.parseFloat(prefs.legWidth);
-    const lh = Number.parseFloat(prefs.legHeight);
-    const lt = Number.parseFloat(prefs.legThickness);
-    const fw = Number.parseFloat(prefs.flangeWidth);
-    const ft = Number.parseFloat(prefs.flangeThickness);
-    const wh = Number.parseFloat(prefs.webHeight);
-    const wt = Number.parseFloat(prefs.webThickness);
-    const st = Number.parseFloat(prefs.sheetThickness);
-    const ifr = Number.parseFloat(prefs.innerFilletRadius);
-    const ofr = Number.parseFloat(prefs.outerFilletRadius);
-    
+    const l = toNumber(prefs.length);
+    const w = toNumber(prefs.width);
+    const h = toNumber(prefs.height);
+    const d = toNumber(prefs.diameter);
+    const t = toNumber(prefs.wallThickness);
+    const ftf = toNumber(prefs.flatToFlat);
+    const lw = toNumber(prefs.legWidth);
+    const lh = toNumber(prefs.legHeight);
+    const lt = toNumber(prefs.legThickness);
+    const fw = toNumber(prefs.flangeWidth);
+    const ft = toNumber(prefs.flangeThickness);
+    const wh = toNumber(prefs.webHeight);
+    const wt = toNumber(prefs.webThickness);
+    const st = toNumber(prefs.sheetThickness);
+    const ifr = toNumber(prefs.innerFilletRadius);
+    const ofr = toNumber(prefs.outerFilletRadius);
+
     const volume = calculateVolume(
-      prefs.shape, l, w, h, d, t, ftf, lw, lh, lt, fw, ft, wh, wt, st, ifr, ofr
+      prefs.shape, l ?? 0, w ?? 0, h ?? 0, d ?? 0, t ?? 0, ftf ?? undefined, lw ?? undefined, lh ?? undefined, lt ?? undefined, fw ?? undefined, ft ?? undefined, wh ?? undefined, wt ?? undefined, st ?? undefined, ifr ?? undefined, ofr ?? undefined
     );
-    if (!volume) return null;
+    if (volume === null) return null;
 
     const material = getMaterial(prefs.materialType);
-    
-    if (!material) {
-      return null;
-    }
-    
-    // Use the new unit-aware calculation
-    const weightResult = calculateWeightWithUnits(
-      volume,
-      material.density,
-      settings.unitSystem
-    );
-    
+    if (!material) return null;
+
+    const weightResult = calculateWeightWithUnits(volume, material.density, settings.unitSystem);
     if (!weightResult) return null;
 
     return {
@@ -133,23 +146,37 @@ export default function MaterialCalculatorClient() {
       weight: weightResult.weight,
       weightKg: weightResult.weightKg,
       density: weightResult.density,
-      surfaceArea: calculateSurfaceArea(prefs.shape, l, w, h, d, t, ftf, lw, lh, lt, fw, ft, wh, wt, st, ifr, ofr)
+      surfaceArea: calculateSurfaceArea(
+        prefs.shape,
+        l ?? 0,
+        w ?? 0,
+        h ?? 0,
+        d ?? 0,
+        t ?? 0,
+        ftf ?? undefined,
+        lw ?? undefined,
+        lh ?? undefined,
+        lt ?? undefined,
+        fw ?? undefined,
+        ft ?? undefined,
+        wh ?? undefined,
+        wt ?? undefined,
+        st ?? undefined,
+        ifr ?? undefined,
+        ofr ?? undefined
+      )
     };
   };
 
-  // Calculate thermal expansion
   const calculateThermalExpansion = () => {
-    const L0 = Number.parseFloat(prefs.originalLength);
-    const dT = Number.parseFloat(prefs.tempChange);
+    const L0 = toNumber(prefs.originalLength);
+    const dT = toNumber(prefs.tempChange);
 
-    if (!L0 || !dT) return null;
+    if (!isPositive(L0) || dT === null) return null;
 
     const material = getMaterial(prefs.thermalMaterial);
-    
-    if (!material) {
-      return null;
-    }
-    
+    if (!material) return null;
+
     const alpha = material.expansion * 1e-6;
     const deltaL = L0 * alpha * dT;
     const finalLength = L0 + deltaL;
@@ -161,26 +188,40 @@ export default function MaterialCalculatorClient() {
     };
   };
 
-  // Calculate section properties
   const getSectionProperties = () => {
-    const w = Number.parseFloat(prefs.width);
-    const h = Number.parseFloat(prefs.height);
-    const d = Number.parseFloat(prefs.diameter);
-    const t = Number.parseFloat(prefs.wallThickness);
-    const ftf = Number.parseFloat(prefs.flatToFlat);
-    const lw = Number.parseFloat(prefs.legWidth);
-    const lh = Number.parseFloat(prefs.legHeight);
-    const lt = Number.parseFloat(prefs.legThickness);
-    const fw = Number.parseFloat(prefs.flangeWidth);
-    const ft = Number.parseFloat(prefs.flangeThickness);
-    const wh = Number.parseFloat(prefs.webHeight);
-    const wt = Number.parseFloat(prefs.webThickness);
-    const st = Number.parseFloat(prefs.sheetThickness);
-    const ifr = Number.parseFloat(prefs.innerFilletRadius);
-    const ofr = Number.parseFloat(prefs.outerFilletRadius);
+    const w = toNumber(prefs.width);
+    const h = toNumber(prefs.height);
+    const d = toNumber(prefs.diameter);
+    const t = toNumber(prefs.wallThickness);
+    const ftf = toNumber(prefs.flatToFlat);
+    const lw = toNumber(prefs.legWidth);
+    const lh = toNumber(prefs.legHeight);
+    const lt = toNumber(prefs.legThickness);
+    const fw = toNumber(prefs.flangeWidth);
+    const ft = toNumber(prefs.flangeThickness);
+    const wh = toNumber(prefs.webHeight);
+    const wt = toNumber(prefs.webThickness);
+    const st = toNumber(prefs.sheetThickness);
+    const ifr = toNumber(prefs.innerFilletRadius);
+    const ofr = toNumber(prefs.outerFilletRadius);
 
     return calculateSectionProperties(
-      prefs.shape, w, h, d, t, ftf, lw, lh, lt, fw, ft, wh, wt, st, ifr, ofr
+      prefs.shape,
+      w ?? 0,
+      h ?? 0,
+      d ?? 0,
+      t ?? 0,
+      ftf ?? undefined,
+      lw ?? undefined,
+      lh ?? undefined,
+      lt ?? undefined,
+      fw ?? undefined,
+      ft ?? undefined,
+      wh ?? undefined,
+      wt ?? undefined,
+      st ?? undefined,
+      ifr ?? undefined,
+      ofr ?? undefined
     );
   };
 
@@ -188,7 +229,6 @@ export default function MaterialCalculatorClient() {
   const thermalResults = calculateThermalExpansion();
   const sectionProps = getSectionProperties();
 
-  // Validations
   const validations = validateMaterialInputs(
     prefs.shape,
     prefs.length,
@@ -210,13 +250,8 @@ export default function MaterialCalculatorClient() {
     prefs.outerFilletRadius
   );
 
-  const tempValidation = prefs.tempChange 
-    ? validateTemperature(Number.parseFloat(prefs.tempChange))
-    : undefined;
-
-  const originalLengthValidation = prefs.originalLength
-    ? validateDimension(Number.parseFloat(prefs.originalLength), 'Length')
-    : undefined;
+  const tempValidation = prefs.tempChange ? validateTemperature(toNumber(prefs.tempChange) ?? 0) : undefined;
+  const originalLengthValidation = prefs.originalLength ? validateDimension(toNumber(prefs.originalLength) ?? 0, 'Length') : undefined;
 
   if (!isHydrated) {
     return <div className="min-h-screen bg-white dark:bg-black" />;
@@ -232,7 +267,6 @@ export default function MaterialCalculatorClient() {
     </div>;
   }
 
-  // Helper to render shape-specific inputs
   const renderShapeInputs = () => {
     switch (prefs.shape) {
       case "rectangle":
@@ -541,127 +575,8 @@ export default function MaterialCalculatorClient() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
-      {/* Navigation */}
-      <nav className="border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <Link
-              href="/"
-              className="text-xl font-bold hover:opacity-60 transition-opacity"
-            >
-              SpecFoundry
-            </Link>
-            <div className="flex gap-8 items-center">
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    const newState = !isReferencesOpen;
-                    setIsReferencesOpen(newState);
-                    if (newState) {
-                      setIsCalculatorsOpen(false);
-                    }
-                  }}
-                  className="hover:opacity-60 transition-opacity text-sm flex items-center gap-1"
-                >
-                  References
-                  <span className="text-xs">
-                    {isReferencesOpen ? "▲" : "▼"}
-                  </span>
-                </button>
-                {isReferencesOpen && (
-                  <div className="absolute top-full mt-2 left-0 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 min-w-[200px] shadow-lg z-50">
-                    <Link
-                      href="/tolerances"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
-                      onClick={() => setIsReferencesOpen(false)}
-                    >
-                      Tolerances
-                    </Link>
-                    <Link
-                      href="/materials"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
-                      onClick={() => setIsReferencesOpen(false)}
-                    >
-                      Materials
-                    </Link>
-                    <Link
-                      href="/processes"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
-                      onClick={() => setIsReferencesOpen(false)}
-                    >
-                      Processes
-                    </Link>
-                    <Link
-                      href="/standards"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900"
-                      onClick={() => setIsReferencesOpen(false)}
-                    >
-                      Standards
-                    </Link>
-                  </div>
-                )}
-              </div>
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    const newState = !isCalculatorsOpen;
-                    setIsCalculatorsOpen(newState);
-                    if (newState) {
-                      setIsReferencesOpen(false);
-                    }
-                  }}
-                  className="hover:opacity-60 transition-opacity text-sm flex items-center gap-1"
-                >
-                  Calculators
-                  <span className="text-xs">
-                    {isCalculatorsOpen ? "▲" : "▼"}
-                  </span>
-                </button>
-                {isCalculatorsOpen && (
-                  <div className="absolute top-full mt-2 left-0 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 min-w-[200px] shadow-lg z-50">
-                  <Link
-                    href="/thread-calculator"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
-                      onClick={() => setIsCalculatorsOpen(false)}
-                    >
-                      Thread Calculator
-                    </Link>
-                    <Link
-                      href="/tolerance-calculator"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
-                      onClick={() => setIsCalculatorsOpen(false)}
-                    >
-                      Tolerance Calculator
-                    </Link>
-                    <Link
-                      href="/material-calculator"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900"
-                      onClick={() => setIsCalculatorsOpen(false)}
-                    >
-                      Material Calculator
-                    </Link>
-                  </div>
-                )}
-              </div>
-              <Link
-                href="/about"
-                className="hover:opacity-60 transition-opacity text-sm"
-              >
-                About
-              </Link>
-              <Link
-                href="/material-compare"
-                className="hover:opacity-60 transition-opacity text-sm"
-              >
-                Material Compare
-              </Link>
-              <SettingsPanel />
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
-      {/* Header */}
       <section className="border-b border-gray-200 dark:border-gray-800 py-12">
         <div className="max-w-6xl mx-auto px-6">
           <div className="font-mono text-xs text-gray-500 dark:text-gray-500 mb-2 tracking-wider">
@@ -674,7 +589,6 @@ export default function MaterialCalculatorClient() {
         </div>
       </section>
 
-      {/* Units Toggle & Share */}
       <section className="border-b border-gray-200 dark:border-gray-800 py-4">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex items-center justify-between">
@@ -683,10 +597,9 @@ export default function MaterialCalculatorClient() {
         </div>
       </section>
 
-      {/* Tab Navigation */}
       <section className="border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="flex gap-1 overflow-x-auto">
+          <div className="flex gap-2 overflow-x-auto">
             <button
               onClick={() => updatePrefs({ activeTab: "weight" })}
               className={`px-6 py-3 font-medium text-sm transition-colors whitespace-nowrap ${
@@ -731,14 +644,11 @@ export default function MaterialCalculatorClient() {
         </div>
       </section>
 
-      {/* Main Content */}
       <section className="py-12">
         <div className="max-w-6xl mx-auto px-6">
-          {/* Weight Calculator */}
           {prefs.activeTab === "weight" && (
             <div className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Input Section */}
                 <div className="lg:col-span-2 border border-gray-300 dark:border-gray-700 p-6">
                   <h2 className="text-xl font-bold mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                     Input Parameters
@@ -751,7 +661,7 @@ export default function MaterialCalculatorClient() {
                       </label>
                       <select
                         value={prefs.materialType}
-                        onChange={(e) => updatePrefs({ materialType: e.target.value })}
+                        onChange={(e) => updatePrefs({ materialType: e.target.value as keyof typeof materials })}
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-black font-mono text-lg"
                       >
                         {Object.entries(materials).map(([key, mat]) => (
@@ -766,14 +676,14 @@ export default function MaterialCalculatorClient() {
                       </label>
                       <select
                         value={prefs.shape}
-                        onChange={(e) => updatePrefs({ shape: e.target.value })}
+                        onChange={(e) => updatePrefs({ shape: e.target.value as MaterialShape })}
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-black font-mono text-lg"
                       >
                         <optgroup label="Basic Shapes">
-                        <option value="rectangle">Rectangle/Bar</option>
-                        <option value="round">Round Bar</option>
-                        <option value="tube">Round Tube</option>
-                        <option value="square_tube">Square Tube</option>
+                          <option value="rectangle">Rectangle/Bar</option>
+                          <option value="round">Round Bar</option>
+                          <option value="tube">Round Tube</option>
+                          <option value="square_tube">Square Tube</option>
                           <option value="hex">Hex Bar</option>
                         </optgroup>
                         <optgroup label="Structural Shapes">
@@ -793,14 +703,13 @@ export default function MaterialCalculatorClient() {
                       onChange={(value) => updatePrefs({ length: value })}
                       step={0.1}
                       unit={settings.unitSystem === "imperial" ? "in" : "mm"}
-                        placeholder="12"
+                      placeholder="12"
                       validation={validations.length}
-                      />
+                    />
 
                     {renderShapeInputs()}
-                    </div>
+                  </div>
 
-                  {/* Info */}
                   <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700">
                     <h3 className="text-xs font-bold mb-2">MATERIAL DENSITY:</h3>
                     <div className="font-mono text-sm text-gray-600 dark:text-gray-400">
@@ -817,8 +726,7 @@ export default function MaterialCalculatorClient() {
                   </div>
                 </div>
 
-                {/* Results Section */}
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {weightResults && (
                     <ResultCard
                       title="Weight Calculation"
@@ -830,7 +738,7 @@ export default function MaterialCalculatorClient() {
                           label: "Length", 
                           value: prefs.length, 
                           unit: settings.unitSystem === "imperial" ? "in" : "mm",
-                          altValue: prefs.length ? formatValue(parseFloat(prefs.length), 'length').alternative : undefined,
+                          altValue: prefs.length ? formatValue(toNumber(prefs.length) ?? 0, 'length').alternative : undefined,
                           altUnit: settings.unitSystem === "imperial" ? "mm" : "in"
                         },
                       ]}
@@ -927,11 +835,9 @@ export default function MaterialCalculatorClient() {
             </div>
           )}
 
-          {/* Section Properties Tab */}
           {prefs.activeTab === "section" && (
             <div className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Input Section */}
                 <div className="lg:col-span-2 border border-gray-300 dark:border-gray-700 p-6">
                   <h2 className="text-xl font-bold mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                     Section Properties Input
@@ -944,7 +850,7 @@ export default function MaterialCalculatorClient() {
                       </label>
                       <select
                         value={prefs.shape}
-                        onChange={(e) => updatePrefs({ shape: e.target.value })}
+                        onChange={(e) => updatePrefs({ shape: e.target.value as MaterialShape })}
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-black font-mono text-lg"
                       >
                         <optgroup label="Basic Shapes">
@@ -968,7 +874,6 @@ export default function MaterialCalculatorClient() {
                     {renderShapeInputs()}
                   </div>
 
-                  {/* Info */}
                   <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700">
                     <h3 className="text-xs font-bold mb-2">SECTION PROPERTIES:</h3>
                     <div className="font-mono text-sm text-gray-600 dark:text-gray-400">
@@ -977,8 +882,7 @@ export default function MaterialCalculatorClient() {
                   </div>
                 </div>
 
-                {/* Results Section */}
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {sectionProps && (
                     <ResultCard
                       title="Section Properties"
@@ -1106,11 +1010,9 @@ export default function MaterialCalculatorClient() {
             </div>
           )}
 
-          {/* Thermal Expansion Tab */}
           {prefs.activeTab === "thermal" && (
             <div className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Input Section */}
                 <div className="lg:col-span-2 border border-gray-300 dark:border-gray-700 p-6">
                   <h2 className="text-xl font-bold mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                     Thermal Expansion Input
@@ -1123,7 +1025,7 @@ export default function MaterialCalculatorClient() {
                       </label>
                       <select
                         value={prefs.thermalMaterial}
-                        onChange={(e) => updatePrefs({ thermalMaterial: e.target.value })}
+                        onChange={(e) => updatePrefs({ thermalMaterial: e.target.value as keyof typeof materials })}
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-black font-mono text-lg"
                       >
                         {Object.entries(materials).map(([key, mat]) => (
@@ -1153,7 +1055,6 @@ export default function MaterialCalculatorClient() {
                     />
                   </div>
 
-                  {/* Info */}
                   <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700">
                     <h3 className="text-xs font-bold mb-2">THERMAL EXPANSION COEFFICIENT:</h3>
                     <div className="font-mono text-sm text-gray-600 dark:text-gray-400">
@@ -1168,8 +1069,7 @@ export default function MaterialCalculatorClient() {
                   </div>
                 </div>
 
-                {/* Results Section */}
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {thermalResults && (
                     <ResultCard
                       title="Thermal Expansion"
@@ -1180,7 +1080,7 @@ export default function MaterialCalculatorClient() {
                           label: "Original Length", 
                           value: prefs.originalLength, 
                           unit: settings.unitSystem === "imperial" ? "in" : "mm",
-                          altValue: prefs.originalLength ? formatValue(parseFloat(prefs.originalLength), 'length').alternative : undefined,
+                          altValue: prefs.originalLength ? formatValue(toNumber(prefs.originalLength) ?? 0, 'length').alternative : undefined,
                           altUnit: settings.unitSystem === "imperial" ? "mm" : "in"
                         },
                         { 
@@ -1258,15 +1158,13 @@ export default function MaterialCalculatorClient() {
             </div>
           )}
 
-          {/* Material Reference Tab */}
           {prefs.activeTab === "reference" && (
             <div className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                {/* Material List */}
                 <div className="lg:col-span-1">
                   <div className="border border-gray-300 dark:border-gray-700 p-4">
                     <h3 className="text-lg font-bold mb-4">Materials</h3>
-                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                    <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
                       {Object.entries(materials).map(([key, material]) => (
                         <button
                           key={key}
@@ -1284,25 +1182,27 @@ export default function MaterialCalculatorClient() {
                   </div>
                 </div>
 
-                {/* Material Details */}
                 <div className="lg:col-span-3">
                   {(() => {
                     const material = getMaterial(prefs.materialType);
                     if (!material) return null;
+                    const propertyEntries = material.properties
+                      ? (Object.entries(material.properties) as [keyof MaterialProperties, MaterialProperty][])
+                      : [];
 
                     return (
                       <div className="border border-gray-300 dark:border-gray-700 p-6">
                         <h2 className="text-2xl font-bold mb-4">{material.name}</h2>
                         
-                        {(material as any).description && (
-                          <p className="text-gray-600 dark:text-gray-400 mb-4">{(material as any).description}</p>
+                        {material.description && (
+                          <p className="text-gray-600 dark:text-gray-400 mb-4">{material.description}</p>
                         )}
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {/* Basic Properties */}
                           <div>
-                            <h3 className="text-lg font-bold mb-3">Basic Properties</h3>
-                            <div className="space-y-2">
+                            <h3 className="text-lg font-bold mb-4">Basic Properties</h3>
+                            <div className="space-y-3">
                               <div className="flex justify-between">
                                 <span className="text-sm text-gray-600 dark:text-gray-400">Density:</span>
                                 <span className="font-mono">
@@ -1340,12 +1240,12 @@ export default function MaterialCalculatorClient() {
                           </div>
 
                           {/* Applications */}
-                          {(material as any).applications && (
+                          {material.applications && (
                             <div>
-                              <h3 className="text-lg font-bold mb-3">Applications</h3>
-                              <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                                {(material as any).applications.map((app: string, index: number) => (
-                                  <li key={index}>• {app}</li>
+                              <h3 className="text-lg font-bold mb-4">Applications</h3>
+                              <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
+                                {material.applications.map((app, index) => (
+                                  <li key={`${app}-${index}`}>• {app}</li>
                                 ))}
                               </ul>
                             </div>
@@ -1353,14 +1253,14 @@ export default function MaterialCalculatorClient() {
                         </div>
 
                         {/* Detailed Properties */}
-                        {(material as any).properties && (
+                        {propertyEntries.length > 0 && (
                           <div className="mt-6">
-                            <h3 className="text-lg font-bold mb-3">Detailed Properties</h3>
+                            <h3 className="text-lg font-bold mb-4">Detailed Properties</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {Object.entries((material as any).properties).map(([prop, data]: [string, any]) => (
-                                <div key={prop} className="border border-gray-200 dark:border-gray-800 p-3">
-                                  <h4 className="font-bold text-sm mb-2">{prop.toUpperCase()}</h4>
-                                  <div className="text-sm space-y-1">
+                              {propertyEntries.map(([prop, data]) => (
+                                <div key={String(prop)} className="border border-gray-200 dark:border-gray-800 p-4">
+                                  <h4 className="font-bold text-sm mb-3">{String(prop).toUpperCase()}</h4>
+                                  <div className="text-sm space-y-2">
                                     <div className="flex justify-between">
                                       <span>Value:</span>
                                       <span className="font-mono">{data.value} {data.unit}</span>
@@ -1395,14 +1295,7 @@ export default function MaterialCalculatorClient() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-200 dark:border-gray-800 py-10 mt-12">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-            <p>&copy; 2024 SpecFoundry. Built for engineers.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

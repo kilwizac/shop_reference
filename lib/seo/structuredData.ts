@@ -1,5 +1,3 @@
-// Structured data (JSON-LD) for calculators and tools
-
 export interface CalculatorStructuredData {
   name: string
   description: string
@@ -12,7 +10,55 @@ export interface CalculatorStructuredData {
   relatedStandards?: string[]
 }
 
-export function generateCalculatorStructuredData(data: CalculatorStructuredData) {
+interface SoftwareApplicationSchema {
+  '@context': string
+  '@type': string
+  name: string
+  description: string
+  url: string
+  applicationCategory: string
+  operatingSystem: string
+  offers: {
+    '@type': string
+    price: string
+    priceCurrency: string
+    availability: string
+  }
+  featureList: string[]
+  softwareVersion: string
+  datePublished: string
+  dateModified: string
+  author: {
+    '@type': string
+    name: string
+    url: string
+  }
+  publisher: {
+    '@type': string
+    name: string
+    url: string
+  }
+  keywords: string
+  about: {
+    '@type': string
+    name: string
+    description: string
+  }
+  potentialAction: {
+    '@type': string
+    target: {
+      '@type': string
+      urlTemplate: string
+      actionPlatform: string[]
+    }
+    object: {
+      '@type': string
+      name: string
+    }
+  }
+}
+
+export function generateCalculatorStructuredData(data: CalculatorStructuredData): SoftwareApplicationSchema {
   return {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -28,7 +74,6 @@ export function generateCalculatorStructuredData(data: CalculatorStructuredData)
       availability: 'https://schema.org/InStock',
     },
     featureList: data.features,
-    screenshot: `${data.url}/screenshot.png`,
     softwareVersion: '1.0',
     datePublished: '2024-01-01',
     dateModified: new Date().toISOString(),
@@ -41,13 +86,6 @@ export function generateCalculatorStructuredData(data: CalculatorStructuredData)
       '@type': 'Organization',
       name: 'SpecFoundry',
       url: 'https://specfoundry.com',
-    },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.8',
-      ratingCount: '150',
-      bestRating: '5',
-      worstRating: '1',
     },
     keywords: data.features.join(', '),
     about: {
@@ -65,7 +103,7 @@ export function generateCalculatorStructuredData(data: CalculatorStructuredData)
           'https://schema.org/MobileWebPlatform',
         ],
       },
-      'object': {
+      object: {
         '@type': 'SoftwareApplication',
         name: data.name,
       },
@@ -73,10 +111,9 @@ export function generateCalculatorStructuredData(data: CalculatorStructuredData)
   }
 }
 
-// Specific calculator structured data
 export const calculatorStructuredData = {
 
-  threadCalculator: (): any => generateCalculatorStructuredData({
+  threadCalculator: (): SoftwareApplicationSchema => generateCalculatorStructuredData({
     name: 'Thread Calculator',
     description: 'Calculate tap drill sizes, thread depths, and thread specifications for imperial and metric threads',
     url: 'https://specfoundry.com/thread-calculator',
@@ -110,7 +147,7 @@ export const calculatorStructuredData = {
     relatedStandards: ['ASME B1.1', 'ISO 68-1', 'ASME B1.20.1'],
   }),
 
-  materialCalculator: (): any => generateCalculatorStructuredData({
+  materialCalculator: (): SoftwareApplicationSchema => generateCalculatorStructuredData({
     name: 'Material Calculator',
     description: 'Calculate material weights, volumes, thermal expansion, and section properties for various shapes',
     url: 'https://specfoundry.com/material-calculator',
@@ -144,7 +181,7 @@ export const calculatorStructuredData = {
     relatedStandards: ['ASTM A36', 'ISO 6892-1', 'ASME Y14.5'],
   }),
 
-  toleranceCalculator: (): any => generateCalculatorStructuredData({
+  toleranceCalculator: (): SoftwareApplicationSchema => generateCalculatorStructuredData({
     name: 'Tolerance Calculator',
     description: 'Calculate dimensional tolerances, fits, and GD&T specifications for precision engineering',
     url: 'https://specfoundry.com/tolerance-calculator',
@@ -177,7 +214,7 @@ export const calculatorStructuredData = {
     relatedStandards: ['ISO 286', 'ASME Y14.5', 'ISO 1302'],
   }),
 
-  materialCompare: (): any => ({
+  materialCompare: () => ({
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name: 'Material Comparison Tool',
@@ -219,7 +256,6 @@ export const calculatorStructuredData = {
   }),
 }
 
-// Organization structured data
 export const organizationStructuredData = {
   specfoundry: () => ({
     '@context': 'https://schema.org',
@@ -228,22 +264,16 @@ export const organizationStructuredData = {
     description: 'Professional engineering reference and calculator platform for machining, manufacturing, and precision engineering applications',
     url: 'https://specfoundry.com',
     logo: 'https://specfoundry.com/logo.png',
-    sameAs: [
-      'https://github.com/specfoundry',
-      'https://twitter.com/specfoundry',
-      'https://linkedin.com/company/specfoundry',
-    ],
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
-      email: 'support@specfoundry.com',
+      email: 'contact@specfoundry.com',
     },
     address: {
       '@type': 'PostalAddress',
       addressCountry: 'US',
     },
     foundingDate: '2024',
-    numberOfEmployees: '1-10',
     industry: 'Engineering Software',
     knowsAbout: [
       'Machining',
@@ -274,7 +304,6 @@ export const organizationStructuredData = {
   }),
 }
 
-// Website structured data
 export const websiteStructuredData = () => ({
   '@context': 'https://schema.org',
   '@type': 'WebSite',

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useRef } from 'react';
 import { useSearch } from '@/lib/contexts/SearchContext';
@@ -198,18 +198,18 @@ export function CommandPalette({ className = '' }: CommandPaletteProps) {
 
   
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 sm:pt-16">
+    <div className="fixed inset-0 z-[var(--z-modal)] flex items-start justify-center pt-8 sm:pt-16">
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[var(--z-modal-backdrop)]"
         onClick={closeSearch}
       />
       
       {/* Search Modal */}
-      <div className={`relative w-full max-w-2xl mx-2 sm:mx-4 ${className}`}>
+      <div className={`relative z-[var(--z-modal)] w-full max-w-2xl mx-2 sm:mx-4 ${className}`}>
         <div className="bg-white dark:bg-black rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
           {/* Search Input */}
-          <div className="flex items-center px-3 sm:px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center px-4 py-3 border-b border-gray-200 dark:border-gray-700">
             <svg 
               className="w-5 h-5 text-gray-400 mr-3" 
               fill="none" 
@@ -278,7 +278,7 @@ export function CommandPalette({ className = '' }: CommandPaletteProps) {
                     
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-2 mb-2">
                         <h3 
                           className="font-medium text-gray-900 truncate"
                           dangerouslySetInnerHTML={{
@@ -320,9 +320,9 @@ export function CommandPalette({ className = '' }: CommandPaletteProps) {
           </div>
           
           {/* Footer */}
-          <div className="px-3 sm:px-4 py-2 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
+          <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
-              <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+              <div className="flex flex-wrap items-center gap-4">
                 <span className="flex items-center gap-1">
                   <span className="font-medium text-gray-600 dark:text-gray-300">Arrow keys</span>
                   <span>Navigate</span>

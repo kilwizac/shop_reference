@@ -30,7 +30,7 @@ export function SettingsPanel({ className = "" }: SettingsPanelProps) {
       {/* Settings Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        className="flex items-center gap-2 px-4 py-2 text-sm border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
         title="Settings"
       >
         <span>⚙️</span>
@@ -40,8 +40,8 @@ export function SettingsPanel({ className = "" }: SettingsPanelProps) {
 
       {/* Settings Panel */}
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-black border border-gray-300 dark:border-gray-700 shadow-lg z-50">
-          <div className="p-3 sm:p-4">
+        <div className="absolute top-full right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-black border border-gray-300 dark:border-gray-700 shadow-lg z-[var(--z-dropdown)]">
+          <div className="p-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-bold text-gray-600 dark:text-gray-400">
                 DISPLAY SETTINGS
@@ -62,7 +62,7 @@ export function SettingsPanel({ className = "" }: SettingsPanelProps) {
               <div className="flex gap-2">
                 <button
                   onClick={() => updateSettings({ unitSystem: 'imperial' })}
-                  className={`flex-1 px-3 py-2 text-xs border transition-colors ${
+                  className={`flex-1 px-3 py-1.5 text-xs border transition-colors ${
                     settings.unitSystem === 'imperial'
                       ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white'
                       : 'border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -72,7 +72,7 @@ export function SettingsPanel({ className = "" }: SettingsPanelProps) {
                 </button>
                 <button
                   onClick={() => updateSettings({ unitSystem: 'metric' })}
-                  className={`flex-1 px-3 py-2 text-xs border transition-colors ${
+                  className={`flex-1 px-3 py-1.5 text-xs border transition-colors ${
                     settings.unitSystem === 'metric'
                       ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white'
                       : 'border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -88,12 +88,12 @@ export function SettingsPanel({ className = "" }: SettingsPanelProps) {
               <label className="block text-xs font-bold mb-2 text-gray-600 dark:text-gray-400">
                 PRIMARY PRECISION
               </label>
-              <div className="grid grid-cols-2 gap-1">
+              <div className="grid grid-cols-2 gap-2">
                 {precisionOptions.map((option) => (
                   <button
                     key={option.value}
                     onClick={() => updateSettings({ precision: option.value })}
-                    className={`px-2 py-1 text-xs border transition-colors ${
+                    className={`px-3 py-1.5 text-xs border transition-colors ${
                       settings.precision === option.value
                         ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white'
                         : 'border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -128,12 +128,12 @@ export function SettingsPanel({ className = "" }: SettingsPanelProps) {
                 <label className="block text-xs font-bold mb-2 text-gray-600 dark:text-gray-400">
                   ALTERNATIVE PRECISION
                 </label>
-                <div className="grid grid-cols-3 gap-1">
+                <div className="grid grid-cols-3 gap-2">
                   {altPrecisionOptions.map((option) => (
                     <button
                       key={option.value}
                       onClick={() => updateSettings({ altUnitPrecision: option.value })}
-                      className={`px-2 py-1 text-xs border transition-colors ${
+                      className={`px-3 py-1.5 text-xs border transition-colors ${
                         settings.altUnitPrecision === option.value
                           ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white'
                           : 'border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -148,7 +148,7 @@ export function SettingsPanel({ className = "" }: SettingsPanelProps) {
             )}
 
             {/* Preview */}
-            <div className="pt-3 border-t border-gray-200 dark:border-gray-800">
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-800">
               <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">PREVIEW:</div>
               <div className="text-sm font-mono">
                 <div className="mb-1">

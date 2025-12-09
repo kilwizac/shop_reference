@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from 'react';
+import type { SerializableState } from '../types/state';
 
 /**
  * Hook for persisting state to localStorage
@@ -19,7 +20,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
         setStoredValue(JSON.parse(item));
       }
     } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
+      console.error(`Error reading localStorage key "${key}"`, error);
     } finally {
       setIsHydrated(true);
     }
@@ -38,7 +39,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
       }
     } catch (error) {
-      console.warn(`Error setting localStorage key "${key}":`, error);
+      console.error(`Error setting localStorage key "${key}"`, error);
     }
   }, [key, storedValue]);
 
@@ -50,7 +51,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
         window.localStorage.removeItem(key);
       }
     } catch (error) {
-      console.warn(`Error removing localStorage key "${key}":`, error);
+      console.error(`Error removing localStorage key "${key}"`, error);
     }
   }, [key, initialValue]);
 
@@ -65,7 +66,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
 /**
  * Hook for persisting multiple related values with a namespace
  */
-export function useNamespacedStorage<T extends Record<string, any>>(
+export function useNamespacedStorage<T extends SerializableState>(
   namespace: string,
   initialState: T
 ) {

@@ -1,7 +1,3 @@
-/**
- * Search types and interfaces for global search functionality
- */
-
 export interface SearchableItem {
   id: string;
   title: string;
@@ -21,13 +17,15 @@ export type SearchCategory =
   | 'processes'
   | 'drill';
 
+export interface SearchActionPayload {
+  url?: string;
+  data?: string | Record<string, string | number | boolean>;
+  calculation?: string;
+}
+
 export interface SearchAction {
   type: 'navigate' | 'copy' | 'calculate';
-  payload: {
-    url?: string;
-    data?: any;
-    calculation?: string;
-  };
+  payload: SearchActionPayload;
 }
 
 export interface SearchResult extends SearchableItem {

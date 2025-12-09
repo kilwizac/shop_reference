@@ -14,14 +14,12 @@ export function MaterialFilters({ onFilterChange, categories, currentFilters }: 
   const [filters, setFilters] = useState<MaterialFilter>(currentFilters || {});
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Sync with parent filters
   useEffect(() => {
     if (currentFilters) {
       setFilters(currentFilters);
     }
   }, [currentFilters]);
 
-  // Calculate property ranges from all materials
   const getPropertyRanges = () => {
     const materials = Object.values(materialsData);
     return {
@@ -55,7 +53,7 @@ export function MaterialFilters({ onFilterChange, categories, currentFilters }: 
 
   const propertyRanges = getPropertyRanges();
 
-  const updateFilter = (key: keyof MaterialFilter, value: any) => {
+  const updateFilter = (key: keyof MaterialFilter, value: MaterialFilter[keyof MaterialFilter]) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
     onFilterChange(newFilters);
@@ -92,7 +90,7 @@ export function MaterialFilters({ onFilterChange, categories, currentFilters }: 
             min={range.min}
             max={range.max}
             step={range.step}
-            className="w-20 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+            className="w-20 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
           />
           <span className="text-gray-500">to</span>
           <input
@@ -102,7 +100,7 @@ export function MaterialFilters({ onFilterChange, categories, currentFilters }: 
             min={range.min}
             max={range.max}
             step={range.step}
-            className="w-20 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+            className="w-20 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
           />
         </div>
         <div className="flex items-center space-x-2">
@@ -133,9 +131,8 @@ export function MaterialFilters({ onFilterChange, categories, currentFilters }: 
 
   return (
     <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden sticky top-6">
-      {/* Header */}
       <div className="border-b border-gray-200 dark:border-gray-700 p-4">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             Filters
           </h3>
@@ -154,7 +151,6 @@ export function MaterialFilters({ onFilterChange, categories, currentFilters }: 
       </div>
 
       <div className="p-4 space-y-4">
-        {/* Category Filter */}
         <div>
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
             Category
@@ -173,7 +169,6 @@ export function MaterialFilters({ onFilterChange, categories, currentFilters }: 
           </select>
         </div>
 
-        {/* Subcategory Filter - Only show when category is selected */}
         {filters.category && (
           <div>
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
@@ -192,10 +187,9 @@ export function MaterialFilters({ onFilterChange, categories, currentFilters }: 
           </div>
         )}
 
-        {/* Advanced Filters Toggle */}
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors"
+          className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors"
         >
           <span>Advanced Filters</span>
           <svg
@@ -211,9 +205,8 @@ export function MaterialFilters({ onFilterChange, categories, currentFilters }: 
           </svg>
         </button>
 
-        {/* Advanced Filters */}
         {isExpanded && (
-          <div className="space-y-4 pt-2">
+          <div className="space-y-4 pt-4">
             <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
               Property Ranges
             </div>

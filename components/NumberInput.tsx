@@ -129,7 +129,7 @@ export function NumberInput({
             <button
               type="button"
               onClick={increment}
-              className="px-2 py-0.5 text-xs hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors border-l border-gray-300 dark:border-gray-700"
+              className="px-2 py-1 text-xs hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors border-l border-gray-300 dark:border-gray-700"
               tabIndex={-1}
             >
               ▲
@@ -137,7 +137,7 @@ export function NumberInput({
             <button
               type="button"
               onClick={decrement}
-              className="px-2 py-0.5 text-xs hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors border-l border-t border-gray-300 dark:border-gray-700"
+              className="px-2 py-1 text-xs hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors border-l border-t border-gray-300 dark:border-gray-700"
               tabIndex={-1}
             >
               ▼
@@ -148,7 +148,7 @@ export function NumberInput({
       
       {/* Validation message */}
       {validation?.warning && (
-        <div className={`mt-1 text-xs flex items-start gap-1 ${
+        <div className={`mt-2 text-xs flex items-start gap-1 ${
           validation.severity === 'error' 
             ? 'text-red-600 dark:text-red-400' 
             : validation.severity === 'warning'
@@ -164,7 +164,7 @@ export function NumberInput({
       
       {/* Hint text for keyboard shortcuts */}
       {isFocused && !disabled && (
-        <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
           Use ↑↓ arrows to adjust (hold Shift for ×10)
         </div>
       )}

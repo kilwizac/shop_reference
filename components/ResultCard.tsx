@@ -209,7 +209,7 @@ export function ResultCard({
 
   return (
     <div className={`border border-gray-300 dark:border-gray-700 p-4 ${className}`}>
-      <div className="flex items-center justify-between mb-3 pb-3 border-b border-gray-200 dark:border-gray-800">
+      <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200 dark:border-gray-800">
         <h3 className="text-sm font-bold text-gray-600 dark:text-gray-400">
           RESULTS
         </h3>
@@ -217,7 +217,7 @@ export function ResultCard({
         <div className="flex gap-2">
           <button
             onClick={handleCopy}
-            className="px-3 py-1 text-xs font-medium border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="px-3 py-1.5 text-xs font-medium border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             title="Copy results to clipboard"
           >
             {copied ? '✓ Copied!' : '📋 Copy'}
@@ -225,7 +225,7 @@ export function ResultCard({
           
           <button
             onClick={handlePrint}
-            className="px-3 py-1 text-xs font-medium border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="px-3 py-1.5 text-xs font-medium border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             title="Print results"
           >
             🖨 Print
@@ -233,20 +233,20 @@ export function ResultCard({
         </div>
       </div>
       
-      <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+      <div className="text-xs text-gray-500 dark:text-gray-400 mb-4">
         {timestamp.toLocaleString()}
       </div>
 
       {/* Results Display */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {/* Inputs */}
         <div>
           <div className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-2">
             INPUT PARAMETERS
           </div>
-          <div className="space-y-1">
+          <div className="space-y-2">
             {inputs.map((item, index) => (
-              <div key={index} className="flex justify-between items-center py-1 border-b border-gray-100 dark:border-gray-800">
+              <div key={index} className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-800">
                 <span className="text-sm text-gray-600 dark:text-gray-400">{item.label}</span>
                 <div className="text-sm font-mono text-right">
                   <div className="text-black dark:text-white">
@@ -268,9 +268,9 @@ export function ResultCard({
           <div className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-2">
             RESULTS
           </div>
-          <div className="space-y-1">
+          <div className="space-y-2">
             {outputs.map((item, index) => (
-              <div key={index} className="flex justify-between items-center py-1 border-b border-gray-100 dark:border-gray-800">
+              <div key={index} className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-800">
                 <span className="text-sm text-gray-600 dark:text-gray-400">{item.label}</span>
                 <div className="text-sm font-mono text-right">
                   <div className="text-black dark:text-white font-bold">

@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
-import { SettingsPanel } from "@/components/SettingsPanel";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { Tabs } from "@/components/Tabs";
 import {
   calculateTapDrill,
   calculateMetricTapDrill,
@@ -14,8 +15,6 @@ import {
   nptThreadData,
   calculateEngagementLength,
   calculateTorqueRecommendation,
-  type UnifiedThreadData,
-  type NPTThreadData,
 } from "@/lib/utils/threadData";
 import { NumberInput } from "@/components/NumberInput";
 import {
@@ -23,40 +22,26 @@ import {
   validateTPI,
   validateThreadEngagement,
   validateThreadPitch,
-  validateNominalSize,
-  validateTolerance,
 } from "@/lib/utils/validation";
 
 export default function ThreadCalculatorClient() {
-  const [isReferencesOpen, setIsReferencesOpen] = useState(false);
-  const [isCalculatorsOpen, setIsCalculatorsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("tap-drill");
   const [units, setUnits] = useState<"imperial" | "metric">("imperial");
   const [threadSystem, setThreadSystem] = useState<"unified" | "npt">("unified");
 
-  // Tap Drill Calculator State
   const [threadSize, setThreadSize] = useState("");
   const [threadsPerInch, setThreadsPerInch] = useState("");
   const [threadEngagement, setThreadEngagement] = useState("75");
-
-  // Metric Thread State
   const [metricDiameter, setMetricDiameter] = useState("");
   const [metricPitch, setMetricPitch] = useState("");
-
-  // Thread Depth State
   const [majorDiameter, setMajorDiameter] = useState("");
   const [pitch, setPitch] = useState("");
   const [threadClass, setThreadClass] = useState("2");
-
-  // Engagement & Torque Calculator State
   const [selectedMaterial, setSelectedMaterial] = useState<"steel" | "aluminum" | "castIron" | "brass" | "plastic">("steel");
   const [selectedGrade, setSelectedGrade] = useState<"grade2" | "grade5" | "grade8">("grade5");
-  
-  // Reference table filter
   const [selectedThreadType, setSelectedThreadType] = useState<"UNC" | "UNF" | "UNEF" | "ALL">("ALL");
   const [selectedEngagement, setSelectedEngagement] = useState(75);
 
-  // Common UNC threads
   const uncThreads = [
     { size: "#4-40", major: 0.112, tpi: 40, tapDrill: "3/32", decimal: 0.0935 },
     { size: "#6-32", major: 0.138, tpi: 32, tapDrill: "#36", decimal: 0.1065 },
@@ -81,7 +66,6 @@ export default function ThreadCalculatorClient() {
     { size: "3/4-16", major: 0.75, tpi: 16, tapDrill: "11/16", decimal: 0.6875 },
   ];
 
-  // Common metric threads
   const metricThreads = [
     { size: "M3x0.5", diameter: 3, pitch: 0.5, tapDrill: 2.5 },
     { size: "M4x0.7", diameter: 4, pitch: 0.7, tapDrill: 3.3 },
@@ -100,7 +84,6 @@ export default function ThreadCalculatorClient() {
     { size: "M24x3.0", diameter: 24, pitch: 3.0, tapDrill: 21.0 },
   ];
 
-  // Calculate tap drill size
   const calculateTapDrillResults = () => {
     const d = Number.parseFloat(threadSize);
     const tpi = Number.parseFloat(threadsPerInch);
@@ -112,7 +95,6 @@ export default function ThreadCalculatorClient() {
     return { tapDrillDiameter: result?.tapDrillDiameter, threadDepth: result?.threadDepth };
   };
 
-  // Calculate metric tap drill
   const calculateMetricTapDrillResults = () => {
     const d = Number.parseFloat(metricDiameter);
     const p = Number.parseFloat(metricPitch);
@@ -124,7 +106,6 @@ export default function ThreadCalculatorClient() {
     return { tapDrillDiameter: result?.tapDrillDiameter, threadDepth: result?.threadDepth };
   };
 
-  // Calculate thread depth
   const calculateThreadDepthResults = () => {
     const d = Number.parseFloat(majorDiameter);
     const p = Number.parseFloat(pitch);
@@ -139,282 +120,105 @@ export default function ThreadCalculatorClient() {
   const metricTapResults = calculateMetricTapDrillResults();
   const threadDepthResults = calculateThreadDepthResults();
 
+  const tabs = [
+    { id: "tap-drill", label: "Tap Drill Calculator" },
+    { id: "thread-depth", label: "Thread Depth" },
+    ...(threadSystem === "unified" && units === "imperial" ? [{ id: "torque-engagement", label: "Torque & Engagement" }] : []),
+    ...(threadSystem === "npt" && units === "imperial" ? [{ id: "npt-calculator", label: "NPT/NPTF Calculator" }] : []),
+    { id: "reference", label: "Thread Reference" },
+  ];
+
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
-      {/* Navigation */}
-      <nav className="border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <Link
-              href="/"
-              className="text-xl font-bold hover:opacity-60 transition-opacity"
-            >
-              SpecFoundry
-            </Link>
-            <div className="flex gap-8 items-center">
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    const newState = !isReferencesOpen;
-                    setIsReferencesOpen(newState);
-                    if (newState) {
-                      setIsCalculatorsOpen(false);
-                    }
-                  }}
-                  className="hover:opacity-60 transition-opacity text-sm flex items-center gap-1"
-                >
-                  References
-                  <span className="text-xs">
-                    {isReferencesOpen ? "▲" : "▼"}
-                  </span>
-                </button>
-                {isReferencesOpen && (
-                  <div className="absolute top-full mt-2 left-0 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 min-w-[200px] shadow-lg z-50">
-                    <Link
-                      href="/tolerances"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
-                      onClick={() => setIsReferencesOpen(false)}
-                    >
-                      Tolerances
-                    </Link>
-                    <Link
-                      href="/materials"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
-                      onClick={() => setIsReferencesOpen(false)}
-                    >
-                      Materials
-                    </Link>
-                    <Link
-                      href="/processes"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
-                      onClick={() => setIsReferencesOpen(false)}
-                    >
-                      Processes
-                    </Link>
-                    <Link
-                      href="/standards"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900"
-                      onClick={() => setIsReferencesOpen(false)}
-                    >
-                      Standards
-                    </Link>
-                  </div>
-                )}
+    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex flex-col">
+      <Header />
+
+      {/* Hero Section */}
+      <section className="pt-12 pb-8 bg-gray-50 dark:bg-gray-900/20 border-b border-gray-200 dark:border-gray-800">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+              <div className="font-mono text-xs text-blue-600 dark:text-blue-400 mb-2 tracking-wider font-semibold">
+                CALC-002 | REV A
               </div>
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    const newState = !isCalculatorsOpen;
-                    setIsCalculatorsOpen(newState);
-                    if (newState) {
-                      setIsReferencesOpen(false);
-                    }
-                  }}
-                  className="hover:opacity-60 transition-opacity text-sm flex items-center gap-1"
-                >
-                  Calculators
-                  <span className="text-xs">
-                    {isCalculatorsOpen ? "▲" : "▼"}
-                  </span>
-                </button>
-                {isCalculatorsOpen && (
-                  <div className="absolute top-full mt-2 left-0 bg-white dark:bg-black border border-gray-300 dark:border-gray-700 min-w-[200px] shadow-lg z-50">
-                  <Link
-                    href="/thread-calculator"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
-                      onClick={() => setIsCalculatorsOpen(false)}
-                    >
-                      Thread Calculator
-                    </Link>
-                    <Link
-                      href="/tolerance-calculator"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
-                      onClick={() => setIsCalculatorsOpen(false)}
-                    >
-                      Tolerance Calculator
-                    </Link>
-                    <Link
-                      href="/material-calculator"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-900"
-                      onClick={() => setIsCalculatorsOpen(false)}
-                    >
-                      Material Calculator
-                    </Link>
-                  </div>
-                )}
-              </div>
-              <Link
-                href="/about"
-                className="hover:opacity-60 transition-opacity text-sm"
-              >
-                About
-              </Link>
-              <Link
-                href="/material-compare"
-                className="hover:opacity-60 transition-opacity text-sm"
-              >
-                Material Compare
-              </Link>
-              <SettingsPanel />
+              <h1 className="text-4xl font-bold mb-3 tracking-tight">Thread Calculator</h1>
+              <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl">
+                Calculate tap drill sizes, thread depths, and thread specifications.
+              </p>
             </div>
-          </div>
-        </div>
-      </nav>
-
-      {/* Header */}
-      <section className="border-b border-gray-200 dark:border-gray-800 py-12">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="font-mono text-xs text-gray-500 dark:text-gray-500 mb-2 tracking-wider">
-            CALC-002 | REV A | THREAD CALCULATOR
-          </div>
-          <h1 className="text-4xl font-bold mb-3">Thread Calculator</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Calculate tap drill sizes, thread depths, and thread specifications for imperial and metric threads
-          </p>
-        </div>
-      </section>
-
-      {/* Units Toggle */}
-      <section className="border-b border-gray-200 dark:border-gray-800 py-4">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-center gap-4">
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-medium">Thread Standard:</span>
-              <div className="flex gap-2">
+            
+            {/* Quick Settings */}
+            <div className="flex flex-col gap-3 min-w-[200px]">
+              <div className="flex bg-gray-200 dark:bg-gray-800 rounded-lg p-1">
                 <button
                   onClick={() => setUnits("imperial")}
-                  className={`px-4 py-2 text-sm font-medium transition-colors border ${
+                  className={`flex-1 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
                     units === "imperial"
-                      ? "border-black dark:border-white bg-black dark:bg-white text-white dark:text-black"
-                      : "border-gray-300 dark:border-gray-700 hover:border-black dark:hover:border-white"
+                      ? "bg-white dark:bg-gray-700 shadow-sm text-black dark:text-white"
+                      : "text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
                   }`}
                 >
                   Imperial
                 </button>
                 <button
                   onClick={() => setUnits("metric")}
-                  className={`px-4 py-2 text-sm font-medium transition-colors border ${
+                  className={`flex-1 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
                     units === "metric"
-                      ? "border-black dark:border-white bg-black dark:bg-white text-white dark:text-black"
-                      : "border-gray-300 dark:border-gray-700 hover:border-black dark:hover:border-white"
+                      ? "bg-white dark:bg-gray-700 shadow-sm text-black dark:text-white"
+                      : "text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
                   }`}
                 >
-                  Metric (ISO)
+                  Metric
                 </button>
               </div>
-            </div>
-            {units === "imperial" && (
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-medium">Thread Type:</span>
-                <div className="flex gap-2">
-                  <button
+
+              {units === "imperial" && (
+                <div className="flex bg-gray-200 dark:bg-gray-800 rounded-lg p-1">
+                   <button
                     onClick={() => setThreadSystem("unified")}
-                    className={`px-4 py-2 text-sm font-medium transition-colors border ${
+                    className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
                       threadSystem === "unified"
-                        ? "border-black dark:border-white bg-black dark:bg-white text-white dark:text-black"
-                        : "border-gray-300 dark:border-gray-700 hover:border-black dark:hover:border-white"
+                        ? "bg-white dark:bg-gray-700 shadow-sm text-black dark:text-white"
+                        : "text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
                     }`}
                   >
-                    UNC/UNF/UNEF
+                    UNC/UNF
                   </button>
                   <button
                     onClick={() => setThreadSystem("npt")}
-                    className={`px-4 py-2 text-sm font-medium transition-colors border ${
+                    className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
                       threadSystem === "npt"
-                        ? "border-black dark:border-white bg-black dark:bg-white text-white dark:text-black"
-                        : "border-gray-300 dark:border-gray-700 hover:border-black dark:hover:border-white"
+                        ? "bg-white dark:bg-gray-700 shadow-sm text-black dark:text-white"
+                        : "text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
                     }`}
                   >
-                    NPT/NPTF (Pipe)
+                    NPT/Pipe
                   </button>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Tab Navigation */}
-      <section className="border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex gap-1 overflow-x-auto">
-            <button
-              onClick={() => setActiveTab("tap-drill")}
-              className={`px-6 py-3 font-medium text-sm transition-colors whitespace-nowrap ${
-                activeTab === "tap-drill"
-                  ? "border-b-2 border-black dark:border-white"
-                  : "text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
-              }`}
-            >
-              Tap Drill Calculator
-            </button>
-            <button
-              onClick={() => setActiveTab("thread-depth")}
-              className={`px-6 py-3 font-medium text-sm transition-colors whitespace-nowrap ${
-                activeTab === "thread-depth"
-                  ? "border-b-2 border-black dark:border-white"
-                  : "text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
-              }`}
-            >
-              Thread Depth
-            </button>
-            {threadSystem === "unified" && units === "imperial" && (
-              <button
-                onClick={() => setActiveTab("torque-engagement")}
-                className={`px-6 py-3 font-medium text-sm transition-colors whitespace-nowrap ${
-                  activeTab === "torque-engagement"
-                    ? "border-b-2 border-black dark:border-white"
-                    : "text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
-                }`}
-              >
-                Torque & Engagement
-              </button>
-            )}
-            {threadSystem === "npt" && units === "imperial" && (
-              <button
-                onClick={() => setActiveTab("npt-calculator")}
-                className={`px-6 py-3 font-medium text-sm transition-colors whitespace-nowrap ${
-                  activeTab === "npt-calculator"
-                    ? "border-b-2 border-black dark:border-white"
-                    : "text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
-                }`}
-              >
-                NPT/NPTF Calculator
-              </button>
-            )}
-            <button
-              onClick={() => setActiveTab("reference")}
-              className={`px-6 py-3 font-medium text-sm transition-colors whitespace-nowrap ${
-                activeTab === "reference"
-                  ? "border-b-2 border-black dark:border-white"
-                  : "text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
-              }`}
-            >
-              Thread Reference
-            </button>
-          </div>
-        </div>
-      </section>
+      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {/* Main Content */}
-      <section className="py-12">
-        <div className="max-w-6xl mx-auto px-6">
-          {/* Tap Drill Calculator */}
+      <section className="flex-1 py-8">
+        <div className="max-w-7xl mx-auto px-6">
           {activeTab === "tap-drill" && (
-            <div className="space-y-8">
+            <div className="space-y-8 animate-fade-in-up">
               {units === "imperial" ? (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {/* Input Section */}
-                  <div className="lg:col-span-2 border border-gray-300 dark:border-gray-700 p-6">
-                    <h2 className="text-xl font-bold mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
-                      Input Parameters (Imperial)
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 p-6">
+                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                       <span className="w-1 h-6 bg-blue-600 rounded-full"></span>
+                       Input Parameters (Imperial)
                     </h2>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <NumberInput
                         value={threadSize}
                         onChange={setThreadSize}
-                        label="MAJOR DIAMETER (INCHES)"
+                        label="Major Diameter (in)"
                         placeholder="0.250"
                         step={0.001}
                         unit="in"
@@ -424,7 +228,7 @@ export default function ThreadCalculatorClient() {
                       <NumberInput
                         value={threadsPerInch}
                         onChange={setThreadsPerInch}
-                        label="THREADS PER INCH (TPI)"
+                        label="Threads Per Inch (TPI)"
                         placeholder="20"
                         step={1}
                         unit="TPI"
@@ -435,47 +239,52 @@ export default function ThreadCalculatorClient() {
                         <NumberInput
                           value={threadEngagement}
                           onChange={setThreadEngagement}
-                          label="THREAD ENGAGEMENT (%)"
+                          label="Thread Engagement (%)"
                           placeholder="75"
                           step={5}
                           unit="%"
                           validation={threadEngagement ? validateThreadEngagement(Number.parseFloat(threadEngagement)) : undefined}
                         />
-                        <p className="text-xs text-gray-500 mt-1">
-                          Standard: 75% | High Strength: 60% | Soft Materials: 50%
-                        </p>
+                        <div className="flex gap-2 mt-2">
+                          {[50, 60, 75].map(val => (
+                            <button
+                              key={val}
+                              onClick={() => setThreadEngagement(val.toString())}
+                              className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-gray-600 dark:text-gray-400"
+                            >
+                              Set {val}%
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Results Section */}
-                  <div className="space-y-3">
-                    <div className="border border-gray-300 dark:border-gray-700 bg-black dark:bg-white text-white dark:text-black p-4">
-                      <div className="font-mono text-xs mb-1 opacity-70">
-                        TAP DRILL SIZE
+                  <div className="space-y-4">
+                    <div className="bg-gray-900 dark:bg-white text-white dark:text-black rounded-xl p-6 shadow-lg transform transition-all hover:scale-[1.02]">
+                      <div className="text-xs font-medium uppercase tracking-wider opacity-80 mb-1">
+                        Tap Drill Size
                       </div>
-                      <div className="text-3xl font-bold font-mono">
+                      <div className="text-4xl font-bold font-mono tracking-tight">
                         {tapDrillResults?.tapDrillDiameter ? tapDrillResults.tapDrillDiameter.toFixed(4) : "---"}
                       </div>
-                      <div className="text-xs font-bold mt-1 opacity-70">INCHES</div>
+                      <div className="text-xs font-bold mt-1 opacity-60">INCHES</div>
                     </div>
 
-                    <div className="border border-gray-300 dark:border-gray-700 p-4">
-                      <div className="font-mono text-xs text-gray-500 mb-1">
-                        THREAD DEPTH
+                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+                      <div className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-1">
+                        Thread Depth
                       </div>
-                      <div className="text-2xl font-bold font-mono">
+                      <div className="text-3xl font-bold font-mono text-gray-900 dark:text-white">
                         {tapDrillResults?.threadDepth ? tapDrillResults.threadDepth.toFixed(4) : "---"}
                       </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                        inches
-                      </div>
+                      <div className="text-xs text-gray-500 mt-1">inches</div>
                     </div>
 
-                    {/* Formulas */}
-                    <div className="p-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700">
-                      <h3 className="text-xs font-bold mb-2">FORMULAS:</h3>
-                      <div className="space-y-1 text-xs font-mono text-gray-600 dark:text-gray-400">
+                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800/50 p-6">
+                      <h3 className="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase mb-3">Formulas</h3>
+                      <div className="space-y-2 text-xs font-mono text-blue-700 dark:text-blue-400">
                         <div>H = 0.6495 / TPI</div>
                         <div>Tap = D - (2×H×E%)</div>
                       </div>
@@ -483,89 +292,93 @@ export default function ThreadCalculatorClient() {
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {/* Input Section */}
-                  <div className="lg:col-span-2 border border-gray-300 dark:border-gray-700 p-6">
-                    <h2 className="text-xl font-bold mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
-                      Input Parameters (Metric)
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 p-6">
+                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                       <span className="w-1 h-6 bg-green-600 rounded-full"></span>
+                       Input Parameters (Metric)
                     </h2>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-xs font-bold mb-2 text-gray-600 dark:text-gray-400">
-                          NOMINAL DIAMETER (MM)
+                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                          Nominal Diameter (mm)
                         </label>
                         <input
                           type="number"
                           step="0.1"
                           value={metricDiameter}
                           onChange={(e) => setMetricDiameter(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-black font-mono text-lg"
+                          className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all font-mono"
                           placeholder="6"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold mb-2 text-gray-600 dark:text-gray-400">
-                          PITCH (MM)
+                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                          Pitch (mm)
                         </label>
                         <input
                           type="number"
                           step="0.1"
                           value={metricPitch}
                           onChange={(e) => setMetricPitch(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-black font-mono text-lg"
+                          className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all font-mono"
                           placeholder="1.0"
                         />
                       </div>
 
                       <div className="md:col-span-2">
-                        <label className="block text-xs font-bold mb-2 text-gray-600 dark:text-gray-400">
-                          THREAD ENGAGEMENT (%)
+                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                          Thread Engagement (%)
                         </label>
                         <input
                           type="number"
                           step="5"
                           value={threadEngagement}
                           onChange={(e) => setThreadEngagement(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-black font-mono text-lg"
+                          className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all font-mono"
                           placeholder="75"
                         />
-                        <p className="text-xs text-gray-500 mt-1">
-                          Standard: 75% | High Strength: 60% | Soft Materials: 50%
-                        </p>
+                        <div className="flex gap-2 mt-2">
+                          {[50, 60, 75].map(val => (
+                            <button
+                              key={val}
+                              onClick={() => setThreadEngagement(val.toString())}
+                              className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-gray-600 dark:text-gray-400"
+                            >
+                              Set {val}%
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Results Section */}
-                  <div className="space-y-3">
-                    <div className="border border-gray-300 dark:border-gray-700 bg-black dark:bg-white text-white dark:text-black p-4">
-                      <div className="font-mono text-xs mb-1 opacity-70">
-                        TAP DRILL SIZE
+                  <div className="space-y-4">
+                    <div className="bg-gray-900 dark:bg-white text-white dark:text-black rounded-xl p-6 shadow-lg transform transition-all hover:scale-[1.02]">
+                      <div className="text-xs font-medium uppercase tracking-wider opacity-80 mb-1">
+                        Tap Drill Size
                       </div>
-                      <div className="text-3xl font-bold font-mono">
+                      <div className="text-4xl font-bold font-mono tracking-tight">
                         {metricTapResults?.tapDrillDiameter ? metricTapResults.tapDrillDiameter.toFixed(2) : "---"}
                       </div>
-                      <div className="text-xs font-bold mt-1 opacity-70">MM</div>
+                      <div className="text-xs font-bold mt-1 opacity-60">MM</div>
                     </div>
 
-                    <div className="border border-gray-300 dark:border-gray-700 p-4">
-                      <div className="font-mono text-xs text-gray-500 mb-1">
-                        THREAD DEPTH
+                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+                      <div className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-1">
+                        Thread Depth
                       </div>
-                      <div className="text-2xl font-bold font-mono">
+                      <div className="text-3xl font-bold font-mono text-gray-900 dark:text-white">
                         {metricTapResults?.threadDepth ? metricTapResults.threadDepth.toFixed(3) : "---"}
                       </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                        mm
-                      </div>
+                      <div className="text-xs text-gray-500 mt-1">mm</div>
                     </div>
 
-                    {/* Formulas */}
-                    <div className="p-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700">
-                      <h3 className="text-xs font-bold mb-2">FORMULAS:</h3>
-                      <div className="space-y-1 text-xs font-mono text-gray-600 dark:text-gray-400">
+                    <div className="bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-100 dark:border-green-800/50 p-6">
+                      <h3 className="text-xs font-bold text-green-800 dark:text-green-300 uppercase mb-3">Formulas</h3>
+                      <div className="space-y-2 text-xs font-mono text-green-700 dark:text-green-400">
                         <div>H = P × 0.6495</div>
                         <div>Tap = D - (2×H×E%)</div>
                       </div>
@@ -574,75 +387,75 @@ export default function ThreadCalculatorClient() {
                 </div>
               )}
 
-              {/* Reference Table */}
-              <div className="border-t-2 border-gray-300 dark:border-gray-700 pt-8">
-                <h3 className="text-lg font-bold mb-4">
+              <div className="mt-12">
+                <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-white">
                   {units === "imperial" ? "Common UNC/UNF Threads" : "Common Metric Threads (ISO)"}
                 </h3>
-                <div className="border border-gray-200 dark:border-gray-800 overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
-                      <tr>
-                        <th className="text-left p-3 font-bold text-xs">THREAD SIZE</th>
+                <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800 text-xs uppercase tracking-wider text-gray-500">
+                          <th className="px-6 py-4 font-semibold">Thread Size</th>
+                          {units === "imperial" ? (
+                            <>
+                              <th className="px-6 py-4 font-semibold">Major Dia (in)</th>
+                              <th className="px-6 py-4 font-semibold">TPI</th>
+                              <th className="px-6 py-4 font-semibold">Tap Drill</th>
+                              <th className="px-6 py-4 font-semibold">Decimal (in)</th>
+                            </>
+                          ) : (
+                            <>
+                              <th className="px-6 py-4 font-semibold">Diameter (mm)</th>
+                              <th className="px-6 py-4 font-semibold">Pitch (mm)</th>
+                              <th className="px-6 py-4 font-semibold">Tap Drill (mm)</th>
+                            </>
+                          )}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                         {units === "imperial" ? (
-                          <>
-                            <th className="text-left p-3 font-bold text-xs">MAJOR DIA (IN)</th>
-                            <th className="text-left p-3 font-bold text-xs">TPI</th>
-                            <th className="text-left p-3 font-bold text-xs">TAP DRILL</th>
-                            <th className="text-left p-3 font-bold text-xs">DECIMAL (IN)</th>
-                          </>
+                          uncThreads.map((thread, idx) => (
+                            <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                              <td className="px-6 py-3 font-mono text-sm font-medium">{thread.size}</td>
+                              <td className="px-6 py-3 font-mono text-sm text-gray-600 dark:text-gray-400">{thread.major.toFixed(4)}</td>
+                              <td className="px-6 py-3 font-mono text-sm text-gray-600 dark:text-gray-400">{thread.tpi}</td>
+                              <td className="px-6 py-3 font-mono text-sm font-medium text-blue-600 dark:text-blue-400">{thread.tapDrill}</td>
+                              <td className="px-6 py-3 font-mono text-sm text-gray-600 dark:text-gray-400">{thread.decimal.toFixed(4)}</td>
+                            </tr>
+                          ))
                         ) : (
-                          <>
-                            <th className="text-left p-3 font-bold text-xs">DIAMETER (MM)</th>
-                            <th className="text-left p-3 font-bold text-xs">PITCH (MM)</th>
-                            <th className="text-left p-3 font-bold text-xs">TAP DRILL (MM)</th>
-                          </>
+                          metricThreads.map((thread, idx) => (
+                            <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                              <td className="px-6 py-3 font-mono text-sm font-medium">{thread.size}</td>
+                              <td className="px-6 py-3 font-mono text-sm text-gray-600 dark:text-gray-400">{thread.diameter}</td>
+                              <td className="px-6 py-3 font-mono text-sm text-gray-600 dark:text-gray-400">{thread.pitch}</td>
+                              <td className="px-6 py-3 font-mono text-sm font-medium text-green-600 dark:text-green-400">{thread.tapDrill.toFixed(1)}</td>
+                            </tr>
+                          ))
                         )}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {units === "imperial" ? (
-                        uncThreads.map((thread, idx) => (
-                          <tr key={idx} className="border-b border-gray-200 dark:border-gray-800">
-                            <td className="p-3 font-mono text-sm font-medium">{thread.size}</td>
-                            <td className="p-3 font-mono text-sm">{thread.major.toFixed(4)}</td>
-                            <td className="p-3 font-mono text-sm">{thread.tpi}</td>
-                            <td className="p-3 font-mono text-sm">{thread.tapDrill}</td>
-                            <td className="p-3 font-mono text-sm">{thread.decimal.toFixed(4)}</td>
-                          </tr>
-                        ))
-                      ) : (
-                        metricThreads.map((thread, idx) => (
-                          <tr key={idx} className="border-b border-gray-200 dark:border-gray-800">
-                            <td className="p-3 font-mono text-sm font-medium">{thread.size}</td>
-                            <td className="p-3 font-mono text-sm">{thread.diameter}</td>
-                            <td className="p-3 font-mono text-sm">{thread.pitch}</td>
-                            <td className="p-3 font-mono text-sm">{thread.tapDrill.toFixed(1)}</td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Thread Depth Calculator */}
           {activeTab === "thread-depth" && (
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Input Section */}
-                <div className="lg:col-span-2 border border-gray-300 dark:border-gray-700 p-6">
-                  <h2 className="text-xl font-bold mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
+            <div className="space-y-8 animate-fade-in-up">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 p-6">
+                  <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span className="w-1 h-6 bg-purple-600 rounded-full"></span>
                     Thread Depth Calculator
                   </h2>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <NumberInput
                       value={majorDiameter}
                       onChange={setMajorDiameter}
-                      label={units === "imperial" ? "MAJOR DIAMETER (INCHES)" : "MAJOR DIAMETER (MM)"}
+                      label={units === "imperial" ? "Major Diameter (in)" : "Major Diameter (mm)"}
                       placeholder={units === "imperial" ? "0.250" : "6.0"}
                       step={units === "imperial" ? 0.001 : 0.1}
                       unit={units === "imperial" ? "in" : "mm"}
@@ -652,7 +465,7 @@ export default function ThreadCalculatorClient() {
                     <NumberInput
                       value={pitch}
                       onChange={setPitch}
-                      label={units === "imperial" ? "THREADS PER INCH (TPI)" : "PITCH (MM)"}
+                      label={units === "imperial" ? "Threads Per Inch (TPI)" : "Pitch (mm)"}
                       placeholder={units === "imperial" ? "20" : "1.0"}
                       step={units === "imperial" ? 1 : 0.1}
                       unit={units === "imperial" ? "TPI" : "mm"}
@@ -660,82 +473,77 @@ export default function ThreadCalculatorClient() {
                     />
 
                     <div className="md:col-span-2">
-                      <label className="block text-xs font-bold mb-2 text-gray-600 dark:text-gray-400">
-                        THREAD CLASS
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        Thread Class
                       </label>
                       <select
                         value={threadClass}
                         onChange={(e) => setThreadClass(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-black font-mono text-lg"
+                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                       >
                         <option value="1">Class 1 (Loose)</option>
                         <option value="2">Class 2 (Standard)</option>
                         <option value="3">Class 3 (Tight)</option>
                       </select>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 mt-2">
                         Class 2 is standard for most applications
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Results Section */}
-                <div className="space-y-3">
-                  <div className="border border-gray-300 dark:border-gray-700 bg-black dark:bg-white text-white dark:text-black p-4">
-                    <div className="font-mono text-xs mb-1 opacity-70">
-                      THREAD HEIGHT
+                <div className="space-y-4">
+                  <div className="bg-gray-900 dark:bg-white text-white dark:text-black rounded-xl p-6 shadow-lg">
+                    <div className="text-xs font-medium uppercase tracking-wider opacity-80 mb-1">
+                      Thread Height
                     </div>
-                    <div className="text-3xl font-bold font-mono">
+                    <div className="text-3xl font-bold font-mono tracking-tight">
                       {threadDepthResults?.threadHeight ? threadDepthResults.threadHeight.toFixed(4) : "---"}
                     </div>
-                    <div className="text-xs font-bold mt-1 opacity-70">
+                    <div className="text-xs font-bold mt-1 opacity-60">
                       {units === "imperial" ? "INCHES" : "MM"}
                     </div>
                   </div>
 
-                  <div className="border border-gray-300 dark:border-gray-700 p-4">
-                    <div className="font-mono text-xs text-gray-500 mb-1">
-                      MINOR DIAMETER
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm">
+                      <div className="text-xs font-medium uppercase text-gray-500 mb-1">Minor Diameter</div>
+                      <div className="text-xl font-bold font-mono text-gray-900 dark:text-white">
+                        {threadDepthResults?.minorDiameter ? threadDepthResults.minorDiameter.toFixed(4) : "---"}
+                      </div>
                     </div>
-                    <div className="text-2xl font-bold font-mono">
-                      {threadDepthResults?.minorDiameter ? threadDepthResults.minorDiameter.toFixed(4) : "---"}
+                    
+                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm">
+                      <div className="text-xs font-medium uppercase text-gray-500 mb-1">Pitch Diameter</div>
+                      <div className="text-xl font-bold font-mono text-gray-900 dark:text-white">
+                        {threadDepthResults?.pitchDiameter ? threadDepthResults.pitchDiameter.toFixed(4) : "---"}
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      {units === "imperial" ? "inches" : "mm"}
-                    </div>
-                  </div>
-
-                  <div className="border border-gray-300 dark:border-gray-700 p-4">
-                    <div className="font-mono text-xs text-gray-500 mb-1">
-                      PITCH DIAMETER
-                    </div>
-                    <div className="text-2xl font-bold font-mono">
-                      {threadDepthResults?.pitchDiameter ? threadDepthResults.pitchDiameter.toFixed(4) : "---"}
-                    </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      {units === "imperial" ? "inches" : "mm"}
-                    </div>
-                  </div>
-
-                  <div className="border border-gray-300 dark:border-gray-700 p-4">
-                    <div className="font-mono text-xs text-gray-500 mb-1">
-                      STRESS AREA
-                    </div>
-                    <div className="text-2xl font-bold font-mono">
-                      {threadDepthResults?.stressArea ? threadDepthResults.stressArea.toFixed(4) : "---"}
-                    </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      {units === "imperial" ? "in²" : "mm²"}
+                    
+                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm">
+                      <div className="text-xs font-medium uppercase text-gray-500 mb-1">Stress Area</div>
+                      <div className="text-xl font-bold font-mono text-gray-900 dark:text-white">
+                        {threadDepthResults?.stressArea ? threadDepthResults.stressArea.toFixed(4) : "---"}
+                      </div>
+                      <div className="text-xs text-gray-500">{units === "imperial" ? "in²" : "mm²"}</div>
                     </div>
                   </div>
 
-                  {/* Clearance Holes */}
-                  <div className="p-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700">
-                    <h3 className="text-xs font-bold mb-2">CLEARANCE HOLES:</h3>
-                    <div className="space-y-1 text-xs font-mono text-gray-600 dark:text-gray-400">
-                      <div>Close: {threadDepthResults?.clearanceClose ? threadDepthResults.clearanceClose.toFixed(4) : "---"}</div>
-                      <div>Standard: {threadDepthResults?.clearanceStandard ? threadDepthResults.clearanceStandard.toFixed(4) : "---"}</div>
-                      <div>Loose: {threadDepthResults?.clearanceLoose ? threadDepthResults.clearanceLoose.toFixed(4) : "---"}</div>
+                  <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+                    <h3 className="text-xs font-bold uppercase mb-2">Clearance Holes</h3>
+                    <div className="space-y-1.5 text-xs font-mono">
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Close:</span>
+                        <span>{threadDepthResults?.clearanceClose ? threadDepthResults.clearanceClose.toFixed(4) : "---"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Standard:</span>
+                        <span>{threadDepthResults?.clearanceStandard ? threadDepthResults.clearanceStandard.toFixed(4) : "---"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Loose:</span>
+                        <span>{threadDepthResults?.clearanceLoose ? threadDepthResults.clearanceLoose.toFixed(4) : "---"}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -743,21 +551,20 @@ export default function ThreadCalculatorClient() {
             </div>
           )}
 
-          {/* Torque & Engagement Calculator */}
           {activeTab === "torque-engagement" && units === "imperial" && threadSystem === "unified" && (
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Input Section */}
-                <div className="lg:col-span-2 border border-gray-300 dark:border-gray-700 p-6">
-                  <h2 className="text-xl font-bold mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
-                    Torque & Engagement Calculator
+            <div className="space-y-8 animate-fade-in-up">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 p-6">
+                  <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span className="w-1 h-6 bg-orange-600 rounded-full"></span>
+                    Torque & Engagement
                   </h2>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <NumberInput
                       value={threadSize}
                       onChange={setThreadSize}
-                      label="MAJOR DIAMETER (INCHES)"
+                      label="Major Diameter (in)"
                       placeholder="0.250"
                       step={0.001}
                       unit="in"
@@ -767,7 +574,7 @@ export default function ThreadCalculatorClient() {
                     <NumberInput
                       value={threadsPerInch}
                       onChange={setThreadsPerInch}
-                      label="THREADS PER INCH (TPI)"
+                      label="Threads Per Inch (TPI)"
                       placeholder="20"
                       step={1}
                       unit="TPI"
@@ -775,13 +582,13 @@ export default function ThreadCalculatorClient() {
                     />
 
                     <div>
-                      <label className="block text-xs font-bold mb-2 text-gray-600 dark:text-gray-400">
-                        MATERIAL TYPE
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        Material Type
                       </label>
                       <select
                         value={selectedMaterial}
-                        onChange={(e) => setSelectedMaterial(e.target.value as any)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-black font-mono text-lg"
+                        onChange={(e) => setSelectedMaterial(e.target.value as typeof selectedMaterial)}
+                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                       >
                         <option value="steel">Steel</option>
                         <option value="aluminum">Aluminum</option>
@@ -792,13 +599,13 @@ export default function ThreadCalculatorClient() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold mb-2 text-gray-600 dark:text-gray-400">
-                        BOLT GRADE
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        Bolt Grade
                       </label>
                       <select
                         value={selectedGrade}
-                        onChange={(e) => setSelectedGrade(e.target.value as any)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-black font-mono text-lg"
+                        onChange={(e) => setSelectedGrade(e.target.value as typeof selectedGrade)}
+                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                       >
                         <option value="grade2">Grade 2 (Low Strength)</option>
                         <option value="grade5">Grade 5 (Medium Strength)</option>
@@ -808,56 +615,40 @@ export default function ThreadCalculatorClient() {
                   </div>
                 </div>
 
-                {/* Results Section */}
-                <div className="space-y-3">
-                  <div className="border border-gray-300 dark:border-gray-700 bg-black dark:bg-white text-white dark:text-black p-4">
-                    <div className="font-mono text-xs mb-1 opacity-70">
-                      MINIMUM ENGAGEMENT
+                <div className="space-y-4">
+                  <div className="bg-gray-900 dark:bg-white text-white dark:text-black rounded-xl p-6 shadow-lg">
+                    <div className="text-xs font-medium uppercase tracking-wider opacity-80 mb-1">
+                      Min. Engagement
                     </div>
-                    <div className="text-3xl font-bold font-mono">
+                    <div className="text-3xl font-bold font-mono tracking-tight">
                       {threadSize && threadsPerInch ? 
                         calculateEngagementLength(Number.parseFloat(threadSize), selectedMaterial).minimum.toFixed(3) : "---"}
                     </div>
-                    <div className="text-xs font-bold mt-1 opacity-70">INCHES</div>
+                    <div className="text-xs font-bold mt-1 opacity-60">INCHES</div>
                   </div>
 
-                  <div className="border border-gray-300 dark:border-gray-700 p-4">
-                    <div className="font-mono text-xs text-gray-500 mb-1">
-                      RECOMMENDED ENGAGEMENT
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm">
+                       <div className="text-xs font-medium uppercase text-gray-500 mb-1">Dry Torque</div>
+                       <div className="text-lg font-bold font-mono">
+                          {threadSize && threadsPerInch ? 
+                          `${calculateTorqueRecommendation(Number.parseFloat(threadSize), Number.parseFloat(threadsPerInch), selectedGrade).dry.min.toFixed(0)}-${calculateTorqueRecommendation(Number.parseFloat(threadSize), Number.parseFloat(threadsPerInch), selectedGrade).dry.max.toFixed(0)}` : "---"}
+                       </div>
+                       <div className="text-xs text-gray-500">lb-ft</div>
                     </div>
-                    <div className="text-2xl font-bold font-mono">
-                      {threadSize && threadsPerInch ? 
-                        calculateEngagementLength(Number.parseFloat(threadSize), selectedMaterial).recommended.toFixed(3) : "---"}
+                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm">
+                       <div className="text-xs font-medium uppercase text-gray-500 mb-1">Lubricated</div>
+                       <div className="text-lg font-bold font-mono">
+                          {threadSize && threadsPerInch ? 
+                          `${calculateTorqueRecommendation(Number.parseFloat(threadSize), Number.parseFloat(threadsPerInch), selectedGrade).lubricated.min.toFixed(0)}-${calculateTorqueRecommendation(Number.parseFloat(threadSize), Number.parseFloat(threadsPerInch), selectedGrade).lubricated.max.toFixed(0)}` : "---"}
+                       </div>
+                       <div className="text-xs text-gray-500">lb-ft</div>
                     </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">inches</div>
                   </div>
 
-                  <div className="border border-gray-300 dark:border-gray-700 p-4">
-                    <div className="font-mono text-xs text-gray-500 mb-1">
-                      DRY TORQUE
-                    </div>
-                    <div className="text-2xl font-bold font-mono">
-                      {threadSize && threadsPerInch ? 
-                        `${calculateTorqueRecommendation(Number.parseFloat(threadSize), Number.parseFloat(threadsPerInch), selectedGrade).dry.min.toFixed(0)}-${calculateTorqueRecommendation(Number.parseFloat(threadSize), Number.parseFloat(threadsPerInch), selectedGrade).dry.max.toFixed(0)}` : "---"}
-                    </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">lb-ft</div>
-                  </div>
-
-                  <div className="border border-gray-300 dark:border-gray-700 p-4">
-                    <div className="font-mono text-xs text-gray-500 mb-1">
-                      LUBRICATED TORQUE
-                    </div>
-                    <div className="text-2xl font-bold font-mono">
-                      {threadSize && threadsPerInch ? 
-                        `${calculateTorqueRecommendation(Number.parseFloat(threadSize), Number.parseFloat(threadsPerInch), selectedGrade).lubricated.min.toFixed(0)}-${calculateTorqueRecommendation(Number.parseFloat(threadSize), Number.parseFloat(threadsPerInch), selectedGrade).lubricated.max.toFixed(0)}` : "---"}
-                    </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">lb-ft</div>
-                  </div>
-
-                  {/* Notes */}
-                  <div className="p-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700">
-                    <h3 className="text-xs font-bold mb-2">NOTES:</h3>
-                    <div className="text-xs text-gray-600 dark:text-gray-400">
+                  <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border border-yellow-100 dark:border-yellow-800/50 p-6">
+                    <h3 className="text-xs font-bold text-yellow-800 dark:text-yellow-300 uppercase mb-2">Notes</h3>
+                    <div className="text-xs text-yellow-800 dark:text-yellow-400 leading-relaxed">
                       {threadSize && threadsPerInch ? 
                         calculateEngagementLength(Number.parseFloat(threadSize), selectedMaterial).notes : 
                         "Enter thread parameters to see recommendations"}
@@ -868,25 +659,24 @@ export default function ThreadCalculatorClient() {
             </div>
           )}
 
-          {/* NPT/NPTF Calculator */}
           {activeTab === "npt-calculator" && units === "imperial" && threadSystem === "npt" && (
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Input Section */}
-                <div className="lg:col-span-2 border border-gray-300 dark:border-gray-700 p-6">
-                  <h2 className="text-xl font-bold mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
-                    NPT/NPTF Pipe Thread Calculator
+            <div className="space-y-8 animate-fade-in-up">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 p-6">
+                  <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span className="w-1 h-6 bg-red-600 rounded-full"></span>
+                    NPT/NPTF Pipe Thread
                   </h2>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-xs font-bold mb-2 text-gray-600 dark:text-gray-400">
-                        PIPE SIZE
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        Pipe Size
                       </label>
                       <select
                         value={threadSize}
                         onChange={(e) => setThreadSize(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-black font-mono text-lg"
+                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                       >
                         <option value="">Select pipe size</option>
                         {nptThreadData.map((thread) => (
@@ -898,13 +688,13 @@ export default function ThreadCalculatorClient() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold mb-2 text-gray-600 dark:text-gray-400">
-                        THREAD TYPE
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        Thread Type
                       </label>
                       <select
                         value={threadClass}
                         onChange={(e) => setThreadClass(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-black font-mono text-lg"
+                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                       >
                         <option value="npt">NPT (Standard)</option>
                         <option value="nptf">NPTF (Dryseal)</option>
@@ -913,70 +703,48 @@ export default function ThreadCalculatorClient() {
                   </div>
                 </div>
 
-                {/* Results Section */}
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {threadSize && nptThreadData.find(t => t.size === threadSize) && (() => {
                     const thread = nptThreadData.find(t => t.size === threadSize)!;
                     return (
                       <>
-                        <div className="border border-gray-300 dark:border-gray-700 bg-black dark:bg-white text-white dark:text-black p-4">
-                          <div className="font-mono text-xs mb-1 opacity-70">
-                            TAP DRILL SIZE
+                        <div className="bg-gray-900 dark:bg-white text-white dark:text-black rounded-xl p-6 shadow-lg">
+                          <div className="text-xs font-medium uppercase tracking-wider opacity-80 mb-1">
+                            Tap Drill Size
                           </div>
-                          <div className="text-3xl font-bold font-mono">
+                          <div className="text-3xl font-bold font-mono tracking-tight">
                             {thread.tapDrill}
                           </div>
-                          <div className="text-xs font-bold mt-1 opacity-70">
+                          <div className="text-xs font-bold mt-1 opacity-60">
                             ({thread.tapDrillDecimal.toFixed(3)}")
                           </div>
                         </div>
 
-                        <div className="border border-gray-300 dark:border-gray-700 p-4">
-                          <div className="font-mono text-xs text-gray-500 mb-1">
-                            NOMINAL OD
-                          </div>
-                          <div className="text-2xl font-bold font-mono">
-                            {thread.nominalOD.toFixed(3)}
-                          </div>
-                          <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">inches</div>
+                        <div className="grid grid-cols-2 gap-4">
+                           <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm">
+                             <div className="text-xs font-medium uppercase text-gray-500 mb-1">Nominal OD</div>
+                             <div className="text-xl font-bold font-mono text-gray-900 dark:text-white">
+                               {thread.nominalOD.toFixed(3)}
+                             </div>
+                           </div>
+                           <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm">
+                             <div className="text-xs font-medium uppercase text-gray-500 mb-1">TPI</div>
+                             <div className="text-xl font-bold font-mono text-gray-900 dark:text-white">
+                               {thread.tpi}
+                             </div>
+                           </div>
                         </div>
 
-                        <div className="border border-gray-300 dark:border-gray-700 p-4">
-                          <div className="font-mono text-xs text-gray-500 mb-1">
-                            TPI
-                          </div>
-                          <div className="text-2xl font-bold font-mono">
-                            {thread.tpi}
-                          </div>
-                          <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">threads per inch</div>
-                        </div>
-
-                        <div className="border border-gray-300 dark:border-gray-700 p-4">
-                          <div className="font-mono text-xs text-gray-500 mb-1">
-                            HAND TIGHT TURNS
-                          </div>
-                          <div className="text-2xl font-bold font-mono">
-                            {thread.handTightEngagement}
-                          </div>
-                          <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">turns</div>
-                        </div>
-
-                        <div className="border border-gray-300 dark:border-gray-700 p-4">
-                          <div className="font-mono text-xs text-gray-500 mb-1">
-                            WRENCH TIGHT TURNS
-                          </div>
-                          <div className="text-2xl font-bold font-mono">
-                            {thread.wrenchTightEngagement}
-                          </div>
-                          <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">turns</div>
-                        </div>
-
-                        <div className="p-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700">
-                          <h3 className="text-xs font-bold mb-2">PITCH DIAMETER:</h3>
-                          <div className="space-y-1 text-xs font-mono text-gray-600 dark:text-gray-400">
-                            <div>At Gage Plane: {thread.pitchDiameter.atGagePlane.toFixed(4)}"</div>
-                            <div>Small End: {thread.pitchDiameter.smallEnd.toFixed(4)}"</div>
-                          </div>
+                        <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+                           <h3 className="text-xs font-bold uppercase mb-2">Engagement Turns</h3>
+                           <div className="flex justify-between items-center mb-1">
+                             <span className="text-xs text-gray-500">Hand Tight:</span>
+                             <span className="text-sm font-mono font-bold">{thread.handTightEngagement}</span>
+                           </div>
+                           <div className="flex justify-between items-center">
+                             <span className="text-xs text-gray-500">Wrench Tight:</span>
+                             <span className="text-sm font-mono font-bold">{thread.wrenchTightEngagement}</span>
+                           </div>
                         </div>
                       </>
                     );
@@ -986,127 +754,133 @@ export default function ThreadCalculatorClient() {
             </div>
           )}
 
-          {/* Thread Reference */}
           {activeTab === "reference" && (
-            <div className="space-y-8">
-              <div className="border border-gray-300 dark:border-gray-700 p-6">
-                <h2 className="text-xl font-bold mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
+            <div className="space-y-8 animate-fade-in-up">
+              <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 p-6">
+                <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                  <span className="w-1 h-6 bg-gray-600 rounded-full"></span>
                   Thread Reference Tables
                 </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  <div>
-                    <label className="block text-xs font-bold mb-2 text-gray-600 dark:text-gray-400">
-                      THREAD TYPE
+                <div className="flex flex-col md:flex-row gap-6 mb-8 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                      Thread System
                     </label>
-                    <select
-                      value={selectedThreadType}
-                      onChange={(e) => setSelectedThreadType(e.target.value as any)}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-black font-mono text-lg"
-                    >
-                      <option value="ALL">All Threads</option>
-                      <option value="UNC">UNC (Coarse)</option>
-                      <option value="UNF">UNF (Fine)</option>
-                      <option value="UNEF">UNEF (Extra Fine)</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold mb-2 text-gray-600 dark:text-gray-400">
-                      ENGAGEMENT %
-                    </label>
-                    <select
-                      value={selectedEngagement}
-                      onChange={(e) => setSelectedEngagement(Number.parseInt(e.target.value))}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-black font-mono text-lg"
-                    >
-                      <option value={50}>50%</option>
-                      <option value={60}>60%</option>
-                      <option value={70}>70%</option>
-                      <option value={75}>75% (Standard)</option>
-                      <option value={80}>80%</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold mb-2 text-gray-600 dark:text-gray-400">
-                      UNITS
-                    </label>
-                    <div className="flex gap-2">
+                    <div className="flex bg-white dark:bg-gray-800 rounded-lg p-1 border border-gray-200 dark:border-gray-700">
                       <button
                         onClick={() => setUnits("imperial")}
-                        className={`px-4 py-2 text-sm font-medium transition-colors border ${
+                        className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
                           units === "imperial"
-                            ? "border-black dark:border-white bg-black dark:bg-white text-white dark:text-black"
-                            : "border-gray-300 dark:border-gray-700 hover:border-black dark:hover:border-white"
+                            ? "bg-gray-100 dark:bg-gray-700 text-black dark:text-white shadow-sm"
+                            : "text-gray-500 hover:text-gray-700"
                         }`}
                       >
                         Imperial
                       </button>
                       <button
                         onClick={() => setUnits("metric")}
-                        className={`px-4 py-2 text-sm font-medium transition-colors border ${
+                        className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
                           units === "metric"
-                            ? "border-black dark:border-white bg-black dark:bg-white text-white dark:text-black"
-                            : "border-gray-300 dark:border-gray-700 hover:border-black dark:hover:border-white"
+                            ? "bg-gray-100 dark:bg-gray-700 text-black dark:text-white shadow-sm"
+                            : "text-gray-500 hover:text-gray-700"
                         }`}
                       >
                         Metric
                       </button>
                     </div>
                   </div>
+
+                  {units === "imperial" && (
+                    <>
+                      <div className="flex-1">
+                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                          Thread Type
+                        </label>
+                        <select
+                          value={selectedThreadType}
+                          onChange={(e) => setSelectedThreadType(e.target.value as typeof selectedThreadType)}
+                          className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="ALL">All Threads</option>
+                          <option value="UNC">UNC (Coarse)</option>
+                          <option value="UNF">UNF (Fine)</option>
+                          <option value="UNEF">UNEF (Extra Fine)</option>
+                        </select>
+                      </div>
+
+                      <div className="flex-1">
+                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                          Engagement %
+                        </label>
+                        <select
+                          value={selectedEngagement}
+                          onChange={(e) => setSelectedEngagement(Number.parseInt(e.target.value))}
+                          className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value={50}>50%</option>
+                          <option value={60}>60%</option>
+                          <option value={70}>70%</option>
+                          <option value={75}>75% (Standard)</option>
+                          <option value={80}>80%</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
                 </div>
 
-                <div className="border border-gray-200 dark:border-gray-800 overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
-                      <tr>
-                        <th className="text-left p-3 font-bold text-xs">THREAD SIZE</th>
-                        <th className="text-left p-3 font-bold text-xs">MAJOR DIA</th>
-                        <th className="text-left p-3 font-bold text-xs">TPI</th>
-                        <th className="text-left p-3 font-bold text-xs">TAP DRILL</th>
-                        <th className="text-left p-3 font-bold text-xs">DECIMAL</th>
-                        <th className="text-left p-3 font-bold text-xs">TORQUE (DRY)</th>
-                        <th className="text-left p-3 font-bold text-xs">TORQUE (LUB)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {units === "imperial" ? (
-                        [...uncThreadData, ...unefThreadData]
-                          .filter(thread => selectedThreadType === "ALL" || thread.threadType === selectedThreadType)
-                          .map((thread, idx) => {
-                            const drillData = thread.drillSizes.find(d => d.engagement === selectedEngagement);
-                            return (
-                              <tr key={idx} className="border-b border-gray-200 dark:border-gray-800">
-                                <td className="p-3 font-mono text-sm font-medium">{thread.size}</td>
-                                <td className="p-3 font-mono text-sm">{thread.majorDiameter.toFixed(4)}</td>
-                                <td className="p-3 font-mono text-sm">{thread.tpi}</td>
-                                <td className="p-3 font-mono text-sm">{drillData?.drillSize || "---"}</td>
-                                <td className="p-3 font-mono text-sm">{drillData?.decimal.toFixed(4) || "---"}</td>
-                                <td className="p-3 font-mono text-sm">
-                                  {thread.torque ? `${thread.torque.dry.min}-${thread.torque.dry.max}` : "---"}
-                                </td>
-                                <td className="p-3 font-mono text-sm">
-                                  {thread.torque ? `${thread.torque.lubricated.min}-${thread.torque.lubricated.max}` : "---"}
-                                </td>
-                              </tr>
-                            );
-                          })
-                      ) : (
-                        metricThreads.map((thread, idx) => (
-                          <tr key={idx} className="border-b border-gray-200 dark:border-gray-800">
-                            <td className="p-3 font-mono text-sm font-medium">{thread.size}</td>
-                            <td className="p-3 font-mono text-sm">{thread.diameter}</td>
-                            <td className="p-3 font-mono text-sm">{thread.pitch}</td>
-                            <td className="p-3 font-mono text-sm">{thread.tapDrill.toFixed(1)}</td>
-                            <td className="p-3 font-mono text-sm">{thread.tapDrill.toFixed(3)}</td>
-                            <td className="p-3 font-mono text-sm">---</td>
-                            <td className="p-3 font-mono text-sm">---</td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
+                <div className="border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="bg-gray-50 dark:bg-gray-800/80 border-b border-gray-200 dark:border-gray-700 text-xs uppercase tracking-wider text-gray-500">
+                          <th className="px-6 py-4 font-semibold">Thread Size</th>
+                          <th className="px-6 py-4 font-semibold">Major Dia</th>
+                          <th className="px-6 py-4 font-semibold">TPI/Pitch</th>
+                          <th className="px-6 py-4 font-semibold">Tap Drill</th>
+                          <th className="px-6 py-4 font-semibold">Decimal</th>
+                          <th className="px-6 py-4 font-semibold">Torque (Dry)</th>
+                          <th className="px-6 py-4 font-semibold">Torque (Lub)</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                        {units === "imperial" ? (
+                          [...uncThreadData, ...unefThreadData]
+                            .filter(thread => selectedThreadType === "ALL" || thread.threadType === selectedThreadType)
+                            .map((thread, idx) => {
+                              const drillData = thread.drillSizes.find(d => d.engagement === selectedEngagement);
+                              return (
+                                <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                  <td className="px-6 py-3 font-mono text-sm font-medium">{thread.size}</td>
+                                  <td className="px-6 py-3 font-mono text-sm text-gray-600 dark:text-gray-400">{thread.majorDiameter.toFixed(4)}</td>
+                                  <td className="px-6 py-3 font-mono text-sm text-gray-600 dark:text-gray-400">{thread.tpi}</td>
+                                  <td className="px-6 py-3 font-mono text-sm font-medium text-blue-600 dark:text-blue-400">{drillData?.drillSize || "---"}</td>
+                                  <td className="px-6 py-3 font-mono text-sm text-gray-600 dark:text-gray-400">{drillData?.decimal.toFixed(4) || "---"}</td>
+                                  <td className="px-6 py-3 font-mono text-sm text-gray-600 dark:text-gray-400">
+                                    {thread.torque ? `${thread.torque.dry.min}-${thread.torque.dry.max}` : "---"}
+                                  </td>
+                                  <td className="px-6 py-3 font-mono text-sm text-gray-600 dark:text-gray-400">
+                                    {thread.torque ? `${thread.torque.lubricated.min}-${thread.torque.lubricated.max}` : "---"}
+                                  </td>
+                                </tr>
+                              );
+                            })
+                        ) : (
+                          metricThreads.map((thread, idx) => (
+                            <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                              <td className="px-6 py-3 font-mono text-sm font-medium">{thread.size}</td>
+                              <td className="px-6 py-3 font-mono text-sm text-gray-600 dark:text-gray-400">{thread.diameter}</td>
+                              <td className="px-6 py-3 font-mono text-sm text-gray-600 dark:text-gray-400">{thread.pitch}</td>
+                              <td className="px-6 py-3 font-mono text-sm font-medium text-green-600 dark:text-green-400">{thread.tapDrill.toFixed(1)}</td>
+                              <td className="px-6 py-3 font-mono text-sm text-gray-600 dark:text-gray-400">{thread.tapDrill.toFixed(3)}</td>
+                              <td className="px-6 py-3 text-sm text-gray-400">---</td>
+                              <td className="px-6 py-3 text-sm text-gray-400">---</td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1114,14 +888,7 @@ export default function ThreadCalculatorClient() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-200 dark:border-gray-800 py-10 mt-12">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-            <p>&copy; 2024 SpecFoundry. Built for engineers.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

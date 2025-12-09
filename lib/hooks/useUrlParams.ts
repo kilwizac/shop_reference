@@ -2,12 +2,67 @@
 
 import { useCallback, useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import type { SerializableState, SerializableValue } from '../types/state';
+
+const isObjectLike = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const isSerializableValue = (value: unknown): value is SerializableValue =>
+  typeof value === 'string' ||
+  typeof value === 'number' ||
+  typeof value === 'boolean' ||
+  value === null ||
+  (Array.isArray(value) && value.every(isSerializableValue)) ||
+  (isObjectLike(value) && Object.values(value).every(isSerializableValue));
+
+const coerceValueToTemplate = (
+  rawValue: string,
+  template: SerializableValue | undefined
+): SerializableValue | undefined => {
+  const decodedValue = decodeURIComponent(rawValue);
+
+  const matchesTemplate = (candidate: unknown): candidate is SerializableValue => {
+    if (!isSerializableValue(candidate)) return false;
+    if (template === null) return candidate === null;
+    if (template === undefined) return false;
+    if (Array.isArray(template)) return Array.isArray(candidate);
+    if (isObjectLike(template)) return isObjectLike(candidate);
+    return typeof candidate === typeof template;
+  };
+
+  try {
+    const parsed = JSON.parse(decodedValue) as unknown;
+    if (matchesTemplate(parsed)) {
+      return parsed;
+    }
+  } catch {
+    // Fallback to primitive coercion
+  }
+
+  if (template === undefined) return undefined;
+  if (template === null) return null;
+
+  if (typeof template === 'number') {
+    const parsedNumber = Number(decodedValue);
+    return Number.isFinite(parsedNumber) ? parsedNumber : undefined;
+  }
+
+  if (typeof template === 'boolean') {
+    return decodedValue === 'true';
+  }
+
+  if (typeof template === 'string') {
+    return decodedValue;
+  }
+
+  return undefined;
+};
 
 /**
  * Hook for encoding/decoding calculator state to/from URL query parameters
  * Enables shareable links for calculators
  */
-export function useUrlParams<T extends Record<string, any>>(
+export function useUrlParams<T extends SerializableState>(
   initialState: T,
   namespace: string = 'calc'
 ) {
@@ -38,20 +93,23 @@ export function useUrlParams<T extends Record<string, any>>(
     }
     
     for (const [key, value] of searchParams.entries()) {
-      if (key.startsWith(`${namespace}_`)) {
-        const stateKey = key.replace(`${namespace}_`, '') as keyof T;
-        try {
-          // Try to parse as JSON first (for complex values)
-          state[stateKey] = JSON.parse(decodeURIComponent(value)) as T[keyof T];
-        } catch {
-          // If not JSON, use as string
-          state[stateKey] = decodeURIComponent(value) as T[keyof T];
-        }
+      if (!key.startsWith(`${namespace}_`)) continue;
+
+      const stateKey = key.replace(`${namespace}_`, '') as keyof T;
+      
+      // Only accept keys that exist in initialState to prevent injection
+      if (!(stateKey in initialState)) {
+        continue;
+      }
+      
+      const parsedValue = coerceValueToTemplate(value, initialState[stateKey]);
+      if (parsedValue !== undefined) {
+        state[stateKey] = parsedValue as T[keyof T];
       }
     }
     
     return state;
-  }, [searchParams, namespace, isClient]);
+  }, [searchParams, namespace, isClient, initialState]);
 
   // Encode state to URL params
   const updateUrl = useCallback((state: Partial<T>) => {
@@ -72,10 +130,10 @@ export function useUrlParams<T extends Record<string, any>>(
     Object.entries(state).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         const paramKey = `${namespace}_${key}`;
-        const paramValue = typeof value === 'object' 
-          ? encodeURIComponent(JSON.stringify(value))
-          : encodeURIComponent(String(value));
-        params.set(paramKey, paramValue);
+        const encodedValue = typeof value === 'object' 
+          ? JSON.stringify(value)
+          : String(value);
+        params.set(paramKey, encodeURIComponent(encodedValue));
       }
     });
     
@@ -91,10 +149,10 @@ export function useUrlParams<T extends Record<string, any>>(
     Object.entries(state).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         const paramKey = `${namespace}_${key}`;
-        const paramValue = typeof value === 'object' 
-          ? encodeURIComponent(JSON.stringify(value))
-          : encodeURIComponent(String(value));
-        params.set(paramKey, paramValue);
+        const encodedValue = typeof value === 'object' 
+          ? JSON.stringify(value)
+          : String(value);
+        params.set(paramKey, encodeURIComponent(encodedValue));
       }
     });
     
